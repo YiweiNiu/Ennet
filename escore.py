@@ -344,10 +344,12 @@ def escore(snp_file, G):
 
     G, aj_matrix, weight_matrix, p_0 = get_weight_and_firstp(G)
     r=choose_r(aj_matrix)
-    print("Choose r=%s" % (r))
+    print("Choose r = %s" % (r))
 
     p_n = stationary_p(weight_matrix,r,p_0)
-    #p_n = iterate_p(p_0,weight_matrix,r,p_0)
+    p_old = iterate_p(p_0,weight_matrix,r,p_0)
+    p_diff = np.linalg.norm(np.subtract(p_n, p_old), 1)
+    print("L1 norm of pn_new and pn_old = %s" % (p_diff))
     
     i = 0
     for node in G:
