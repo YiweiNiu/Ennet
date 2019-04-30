@@ -14,6 +14,7 @@ import scipy.stats as st
 import math
 from sklearn.preprocessing import normalize
 from scipy.linalg import inv
+import scipy as sp
 import numpy as np
 from math import log10
 
@@ -156,7 +157,32 @@ def get_weight_and_firstp(G):
         node_index=list(H.nodes).index(node)
         p_0[node_index]=(1 - H.nodes[node]['pvalue'])/whole_weight
     p_0=np.array(p_0)
-    return H, norm_w, p_0
+    return H, init_w, norm_w, p_0
+
+def similarity_matrix(A, r):
+    '''
+    Perform the random walk with restart process in Ennet
+    '''
+    W=normalize(A,norm='l1',axis=0) #normalize with each column(sum=1)
+    return r*inv(np.eye(*np.shape(W))-(1-r)*W)
+
+def difference(A, r):
+    '''
+    Find difference between fraction of distribution on neighbors and non-neighbors.
+    '''
+    P = similarity_matrix(A, r)
+    np.fill_diagonal(P, 0)
+
+    n = np.sum(P[np.where(A>=1)])
+    s = np.sum(P[np.where(A<1)])
+    return n-s
+    
+
+def choose_r(A):
+    '''
+    Find value of r that sets difference to zero between fraction of distribution on neighbors and non-neighbors to zero. Derived from Hotnet2.
+    '''
+    return sp.optimize.ridder(lambda r: difference(A, r), a=0.01, b=0.99, xtol=0.001)
 
 def iterate_p(p,weight_matrix,r,p_0):
     p_new=np.dot(weight_matrix,p)*(1-r)+p_0*r
@@ -168,6 +194,9 @@ def iterate_p(p,weight_matrix,r,p_0):
         return iterate_p(p_new,weight_matrix,r,p_0)
 
 def stationary_p(weight_matrix,r,p_0):
+    '''
+    Calculate p when it reaches a stationary distribution
+    '''
     return r*np.dot(inv(np.eye(*np.shape(weight_matrix))-(1-r)*weight_matrix),p_0)
 
 
@@ -313,10 +342,12 @@ def escore(snp_file, G):
 
     #G = multi_test_pvalues(G)
 
-    G, weight_matrix, p_0 = get_weight_and_firstp(G)
+    G, aj_matrix, weight_matrix, p_0 = get_weight_and_firstp(G)
+    r=choose_r(aj_matrix)
+    print("Choose r=%s" % (r))
 
-    p_n = stationary_p(weight_matrix,0.7,p_0)
-    #p_n = iterate_p(p_0,weight_matrix,0.7,p_0)
+    p_n = stationary_p(weight_matrix,r,p_0)
+    #p_n = iterate_p(p_0,weight_matrix,r,p_0)
     
     i = 0
     for node in G:
