@@ -202,14 +202,14 @@ def plot_root_finding(G):
     '''
     plot the process of root finding
 
-    @parameter A - adjacency matrix of a graph
+    @parameter G - a graph
     '''
     # get subnetwork of genes
     H = get_subnetwork(G, 'gene')
     A = nx.to_numpy_matrix(H)
 
     x = np.linspace(0, 1, 100)
-    y = difference(A, x)
+    y = lambda x: difference(A, x)
 
     plt.plot(x, y)
     plt.axhline(0, color='k')
@@ -357,8 +357,10 @@ def escore(snp_file, G):
 
     # choose r
     G = choose_r(G)
-    plot_root_finding(G)
     logger.info('Choosing restart possibility done: r is: %s' % G.graph['r'])
+
+    plot_root_finding(G)
+
 
     # get p_0
     G = get_p_0(G, 'log10_pvalue')
