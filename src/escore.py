@@ -208,9 +208,10 @@ def plot_root_finding(G):
     H = get_subnetwork(G, 'gene')
     A = nx.to_numpy_matrix(H)
 
+    f = lambda x: difference(A, x)
     x = np.linspace(0, 1, 100)
-    y = lambda x: difference(A, x)
-
+    y = f(x)
+    print(x, y)
     plt.plot(x, y)
     plt.axhline(0, color='k')
     plt.xlim(0, 1)
@@ -333,7 +334,7 @@ def get_subnetwork(G, node_type):
     return H
 
 
-def escore(snp_file, G):
+def escore(snp_file, G, r):
     '''
     escore
 
@@ -356,11 +357,14 @@ def escore(snp_file, G):
     logger.info('Computing Poisson p-values done.')
 
     # choose r
-    G = choose_r(G)
-    logger.info('Choosing restart possibility done: r is: %s' % G.graph['r'])
+    if r:
+        G.graph['r'] = r
+        logger.info('Using restart possibility provided: %s' % r)
+    else:
+        G = choose_r(G)
+        logger.info('Choosing restart possibility done: r is: %s' % G.graph['r'])
 
-    plot_root_finding(G)
-
+    #plot_root_finding(G)
 
     # get p_0
     G = get_p_0(G, 'log10_pvalue')
@@ -384,5 +388,6 @@ def test():
 if __name__ == "__main__":
 
     test()
+
 
 

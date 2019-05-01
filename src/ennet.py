@@ -5,6 +5,8 @@ Purpose: main function of ennet.
 
 '''
 
+import argparse
+
 from datetime import datetime
 import networkx as nx
 from collections import OrderedDict
@@ -29,12 +31,13 @@ def ennet(args):
     network_file = args.network
     enhancer_file = args.enhancer
     snp_file = args.mutation
+    r = args.r
 
     # preprocess
     G = preprocess.preprocess(network_file, enhancer_file)
 
     # escore
-    G = escore.escore(snp_file, G)
+    G = escore.escore(snp_file, G, r)
 
     # permutation test
     G = permutation.permutation(G)
@@ -47,16 +50,16 @@ def ennet(args):
 
 
 def main():
-    import argparse
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, \
-                                    usage='\n\npython runEnnet.py [-h] [-n network file] [-e enhancer-gene pairs] [-m snp file] [-o output prefix]\n', \
+                                    usage='\n\npython runEnnet.py [-h] <-n network file> <-e enhancer-gene pairs> <-m snp file> [-r restart possibility] [-o output prefix]\n', \
                                     description='', epilog='Ennet: enhancer-mutated cancer gene prioritizaion with random walk with restart.')
 
-    parser.add_argument('-n', '--network', required=True, help='Path to tab-separated network.', metavar='', dest="network")
-    parser.add_argument('-e', '--enhancer', required=True, help='Path to enhancer-gene pairs.', metavar='', dest="enhancer")
-    parser.add_argument('-m', '--mutation', required=True, help='Path to snp file.', metavar='', dest="mutation")
-    parser.add_argument('-o', '--output', required=True, help='Output prefix.', metavar='', dest="output")
+    parser.add_argument('-n', '--network', required=True, type=str, help='Path to tab-separated network.', metavar='', dest="network")
+    parser.add_argument('-e', '--enhancer', required=True, type=str, help='Path to enhancer-gene pairs.', metavar='', dest="enhancer")
+    parser.add_argument('-m', '--mutation', required=True, type=str, help='Path to snp file.', metavar='', dest="mutation")
+    parser.add_argument('-r', type=float, help='Restart possibility. Choose between 0 and 1.', metavar='', dest="r")
+    parser.add_argument('-o', '--output', default='ennet_res', help='Output prefix.', metavar='', dest="output")
 
     args = parser.parse_args()
 
@@ -116,4 +119,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
