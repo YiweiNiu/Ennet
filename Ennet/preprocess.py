@@ -82,7 +82,7 @@ def get_gene_enh_pair(enhancer_file, G):
             G.nodes[enhancer]['snp_count'] = 0
             G.nodes[enhancer]['enh_len'] = enh_len
 
-            G.nodes[enh_target]['enhs'].add(enhancer)  # store the enhs
+            G.nodes[enh_target]['enhs'].add(enhancer)  # store enhs
 
     return G
 
@@ -105,7 +105,7 @@ def preprocess(network_file, enhancer_file):
     # update genes' enh_len and enh_num
     gene_with_enhs = 0
     for x in G:
-        if G.nodes[x]['type'] = 'gene':
+        if G.nodes[x]['type'] == 'gene':
             tmp = len(G.nodes[x]['enhs'])
             G.nodes[x]['enh_num'] = tmp
 
