@@ -14,8 +14,9 @@ Functions included:
 import os
 import platform
 import networkx as nx
-
 import logging    # logging
+
+import escore
 
 # logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -42,6 +43,7 @@ def init_graph(network_file):
             G.nodes[gene1]['snp_count'] = 0; G.nodes[gene2]['snp_count'] = 0  # raw snp count
             G.nodes[gene1]['enhs'] = set(); G.nodes[gene2]['enhs'] = set()  # store enhancers
             G.nodes[gene1]['enh_len'] = 0; G.nodes[gene2]['enh_len'] = 0  # total enhancer length
+            G.nodes[gene1]['enh_num'] = 0; G.nodes[gene2]['enh_num'] = 0  # total enhancer length
 
     # remove self-conneted nodes
     G.remove_edges_from(G.selfloop_edges())
@@ -55,9 +57,7 @@ def get_gene_enh_pair(enhancer_file, G):
     '''
 
     G.graph['enhancer_file'] = os.path.abspath(enhancer_file)
-    G.graph['enh_len'] = 0  # total enhancer length
-    G.graph['enh_num'] = 0  # total enhancer number
-    G.graph['snp_count'] = 0  # total SNP count
+    G.graph['contigs'] = set()
 
     with open(enhancer_file, 'r') as fin:
         for line in fin:
@@ -67,27 +67,22 @@ def get_gene_enh_pair(enhancer_file, G):
 
             line = line.split('\t')
 
-            enhancer, enh_target = '@'.join(line[:3]), line[3]
-            enh_len = int(line[2]) - int(line[1])
+            enh_target = line[3]
 
-            G.graph['enh_len'] += enh_len   # update the total enhancer length
-            G.graph['enh_num'] += 1 # update the total enhancer number
+            # exclude genes not in the gene-gene network
+            if enh_target not in G:
+                continue
+
+            enhancer = '@'.join(line[:3])
+            enh_len = int(line[2]) - int(line[1])
 
             G.add_edge(enhancer, enh_target, type='eg') # eg for enhancer-gene
 
-            G.nodes[enhancer]['type'] = 'enhancer'; G.nodes[enh_target]['type'] = 'gene'   # node type as gene
-            G.nodes[enhancer]['snp_count'] = 0; G.nodes[enh_target]['snp_count'] = 0   # raw snp count
-            G.nodes[enhancer]['enh_len'] = enh_len  # enhancer length
+            G.nodes[enhancer]['type'] = 'enhancer'
+            G.nodes[enhancer]['snp_count'] = 0
+            G.nodes[enhancer]['enh_len'] = enh_len
 
-            if 'enhs' not in G.nodes[enh_target]:
-                G.nodes[enh_target]['enhs'] = set([enhancer])
-            else:
-                G.nodes[enh_target]['enhs'].add(enhancer)
-
-            if 'enh_len' not in G.nodes[enh_target]:
-                G.nodes[enh_target]['enh_len'] = enh_len
-            else:
-                G.nodes[enh_target]['enh_len'] += enh_len
+            G.nodes[enh_target]['enhs'].add(enhancer)  # store the enhs
 
     return G
 
@@ -100,20 +95,27 @@ def preprocess(network_file, enhancer_file):
     logger.info('Network initiation done: %s genes and %s links included.' %(x1, y1))
 
     G = get_gene_enh_pair(enhancer_file, G)
-    x2, y2 = G.number_of_nodes(), G.number_of_edges()
+    y2 = G.number_of_edges()
 
-    enh_num = 0
-    for i in G:
-        if G.nodes[i]['type']=='enhancer':
-            enh_num += 1
+    # get enh lens
+    enh_lens = get_value_from_graph(G, 'enhancer', 'enh_len')
+    G.graph['enh_len'] = sum(enh_lens.values())  # total enhancer length
+    G.graph['enh_num'] = len(enh_lens)  # total enhancer number
 
-    new_gene_num = 0
-    for i in G:
-        if G.nodes[i]['type']=='gene':
-            if G.nodes[i]['enh_len']:
-                new_gene_num += 1
+    # update genes' enh_len and enh_num
+    gene_with_enhs = 0
+    for x in G:
+        if G.nodes[x]['type'] = 'gene':
+            tmp = len(G.nodes[x]['enhs'])
+            G.nodes[x]['enh_num'] = tmp
 
-    logger.info('Reading enhancer-gene interactions done: %s enhancers, %s genes and %s interactions included. And %s genes are not in the network.' %(enh_num, new_gene_num, y2-y1, x2-x1-enh_num))
+            if tmp != 0:
+                gene_with_enhs += 1
+
+                for enh in G.nodes[x]['enhs']:
+                    G.nodes[x]['enh_len'] += G.nodes[enh]['enh_len']
+
+    logger.info('Reading enhancer-gene interactions done: %s enhancers and %s interactions included. %s genes have at least one enhancer.' %(G.graph['enh_num'], y2-y1, gene_with_enhs))
 
     return G
 
