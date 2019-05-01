@@ -9,7 +9,7 @@ Functions included:
 
 '''
 
-import sys
+from multiprocessing import cpu_count, Pool
 import copy
 import networkx as nx
 import numpy as np
@@ -139,37 +139,59 @@ def random_net(G):
     return GG
 
 
-def permutation(G, permutation_times=100):
+def permutation_helper(G):
     '''
-    permutation test: random network 500 times to generate emperical distribution of final score
-
-    @parameter G - graph
-    @permutation_times - permutation times
-
-    @return G - graph
+    helper function for permutation
     '''
-
     r = G.graph['r']
     p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
     p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
 
-    emp_p_n = {}
+    GG = random_net(G)
+    GG = escore.put_value_into_graph(p_0, GG, 'gene', 'p_0')
+    GG.graph['r'] = r
+    GG = escore.stationary_p(GG)
+    random_p_n = escore.get_value_from_graph(GG, 'gene', 'p_n')
+
+    return random_p_n
+
+
+def permutation(G, permutation_times, threads):
+    '''
+    permutation test: random network 500 times to generate emperical distribution of final score
+
+    @parameter G - graph
+    @parameter permutation_times - permutation times
+    @parameter threads - number of CPUs used to permutate the nework
+
+    @return G - graph
+    '''
+
+    if not threads:
+        threads = cpu_count()
+
+    logger.info('Start network permutation, using %s threads.' % threads)
+
+    pool = Pool(threads)
+    results = []
 
     # permutation the network to generate emperical p_n for each gene
     for i in range(permutation_times):
-        GG = random_net(G)
-        GG = escore.put_value_into_graph(p_0, GG, 'gene', 'p_0')
-        GG.graph['r'] = r
-        GG = escore.stationary_p(GG)
-        random_p_n = escore.get_value_from_graph(GG, 'gene', 'p_n')
+        results.append(pool.apply_async(permutation_helper, args=(G,)))
 
+    pool.close()
+    pool.join()
+
+    emp_p_n = {}
+
+    for random_p_n in results:
         for gene in random_p_n:
             if gene in emp_p_n:
                 emp_p_n[gene].append(random_p_n[gene])
             else:
                 emp_p_n[gene] = [random_p_n[gene]]
 
-    logger.info('Permutation test done.')
+    logger.info('Network permutation done.')
 
     # test each gene using norm distribution
     for gene in emp_p_n:

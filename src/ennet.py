@@ -31,16 +31,16 @@ def ennet(args):
     network_file = args.network
     enhancer_file = args.enhancer
     snp_file = args.mutation
-    r = args.r
+    # do some args checking here
 
     # preprocess
     G = preprocess.preprocess(network_file, enhancer_file)
 
     # escore
-    G = escore.escore(snp_file, G, r)
+    G = escore.escore(snp_file, G, args.r)
 
     # permutation test
-    G = permutation.permutation(G)
+    G = permutation.permutation(G, 100, args.threads)
 
     end = datetime.now()
 
@@ -55,6 +55,7 @@ def main():
                                     usage='\n\npython runEnnet.py [-h] <-n network file> <-e enhancer-gene pairs> <-m snp file> [-r restart possibility] [-o output prefix]\n', \
                                     description='', epilog='Ennet: enhancer-mutated cancer gene prioritizaion with random walk with restart.')
 
+    parser.add_argument('-t', '--threads', type=int, help='Number of CPUs used when permutation. Using all CPUs by default.', metavar='', dest="threads")
     parser.add_argument('-n', '--network', required=True, type=str, help='Path to tab-separated network.', metavar='', dest="network")
     parser.add_argument('-e', '--enhancer', required=True, type=str, help='Path to enhancer-gene pairs.', metavar='', dest="enhancer")
     parser.add_argument('-m', '--mutation', required=True, type=str, help='Path to snp file.', metavar='', dest="mutation")
