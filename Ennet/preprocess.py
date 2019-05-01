@@ -98,7 +98,7 @@ def preprocess(network_file, enhancer_file):
     y2 = G.number_of_edges()
 
     # get enh lens
-    enh_lens = get_value_from_graph(G, 'enhancer', 'enh_len')
+    enh_lens = escore.get_value_from_graph(G, 'enhancer', 'enh_len')
     G.graph['enh_len'] = sum(enh_lens.values())  # total enhancer length
     G.graph['enh_num'] = len(enh_lens)  # total enhancer number
 
