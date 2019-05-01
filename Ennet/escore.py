@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-def count_enh_snps(snp_file, G):
+def count_enh_snps(G):
     '''
     get snp count of enhancers
     '''
@@ -40,7 +40,7 @@ def count_enh_snps(snp_file, G):
                "chr16": {}, "chr17": {}, "chr18": {}, "chr19": {}, "chr20": {},
                "chr21": {}, "chr22": {}, "chrX": {}, "chrY": {}}
 
-    with open(snp_file, 'r') as fin:
+    with open(G.graph['snp_file'], 'r') as fin:
         for line in fin:
             line = line.strip()
             if line.startswith('#'):
@@ -85,15 +85,12 @@ def count_gene_snps(G):
     for x in G:
         if G.nodes[x]['type'] == 'gene':
 
-            snp_count = 0
-            x_neighbors = G.neighbors(x)
-            G.nodes[x]['enh_num'] = 0
+            if G.nodes[x]['enh_num'] == 0:
+                continue
 
-            # count total snps of a gene
-            for y in x_neighbors:
-                if G.nodes[y]['type'] == 'enhancer':
-                    G.nodes[x]['enh_num'] += 1
-                    snp_count += enh_snp_count[y]
+            snp_count = 0
+            for enh in G.nodes[x]['enhs']:
+                snp_count += enh_snp_count[enh]
 
             G.nodes[x]['snp_count'] = snp_count
 
@@ -188,10 +185,7 @@ def choose_r(G):
 
     @return G - a graph
     '''
-    # get subnetwork of genes
-    H = get_subnetwork(G, 'gene')
-
-    A = nx.to_numpy_matrix(H)
+    A = nx.to_numpy_matrix(G)
     r = ridder(lambda r: difference(A, r), a=0.01, b=0.99, xtol=0.001)
 
     G.graph['r'] = r
@@ -204,9 +198,8 @@ def plot_root_finding(G):
 
     @parameter G - a graph
     '''
-    # get subnetwork of genes
-    H = get_subnetwork(G, 'gene')
-    A = nx.to_numpy_matrix(H)
+
+    A = nx.to_numpy_matrix(G)
 
     f = lambda x: difference(A, x)
     x = np.linspace(0, 1, 100)
@@ -241,14 +234,14 @@ def get_p_0(G, score_method='log10_pvalue'):
     elif score_method == 'pvalue':
         gene_pvalue = get_value_from_graph(G, 'gene', 'pvalue')
         total_value = sum([1-i for i in gene_pvalue.values()])
-        
+
         for gene in gene_pvalue:
             G.nodes[gene]['p_0'] = (1-gene_pvalue[gene])/total_value
 
     elif score_method == 'log10_pvalue':
         gene_log10_pvalue = get_value_from_graph(G, 'gene', 'log10_pvalue')
         total_value = float(sum(gene_log10_pvalue.values()))
-        
+
         for gene in gene_log10_pvalue:
             G.nodes[gene]['p_0'] = gene_log10_pvalue[gene]/total_value
 
@@ -263,8 +256,7 @@ def stationary_p(G):
 
     @return G - graph
     '''
-    H = get_subnetwork(G, 'gene')
-    W = nx.to_numpy_matrix(H)
+    W = nx.to_numpy_matrix(G)
     r = G.graph['r']
 
     gene_p_0 = get_value_from_graph(G, 'gene', 'p_0')
@@ -317,23 +309,6 @@ def get_value_from_graph(G, node_type, value_type):
     return value_dict
 
 
-def get_subnetwork(G, node_type):
-    '''
-    get subnetwork from a graph
-
-    @parameter G - a graph
-    @parameter node_type - the node type
-
-    @ return - a sub network of selected node type
-    '''
-    H = G.copy()
-    for node in G:
-        if G.nodes[node]['type'] != node_type:
-            H.remove_node(node)
-
-    return H
-
-
 def escore(snp_file, G, r):
     '''
     escore
@@ -345,7 +320,8 @@ def escore(snp_file, G, r):
     '''
 
     # count the SNPs of enhancers
-    G = count_enh_snps(snp_file, G)
+    G.graph['snp_file'] = snp_file
+    G = count_enh_snps(G)
     logger.info('Counting SNPs in enhancers done.')
 
     # count the SNPs of genes
@@ -355,6 +331,10 @@ def escore(snp_file, G, r):
     # Poisson test to get p value
     G = get_gene_poisson_p(G)
     logger.info('Computing Poisson p-values done.')
+
+    # only keep genes
+    gene_snp_count = get_value_from_graph(G, 'gene', 'snp_count')
+    G = G.subgraph(list(gene_snp_count.keys()))
 
     # choose r
     if r:
