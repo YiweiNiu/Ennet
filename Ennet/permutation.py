@@ -122,15 +122,13 @@ def random_net(G):
     @return GG - random graph that only contains genes
     '''
 
-    H = escore.get_subnetwork(G, 'gene')
-
-    sequence = [d for (_, d) in H.degree]
+    sequence = [d for (_, d) in G.degree]
     GG = nx.configuration_model(sequence)
     GG = nx.Graph(GG)
     GG.remove_edges_from(GG.selfloop_edges())
 
     # re-label
-    mapping = {i:j for i,j in enumerate(H.nodes)}
+    mapping = {i:j for i,j in enumerate(G.nodes)}
     GG = nx.relabel_nodes(GG, mapping, copy=False)
 
     for node in GG.nodes:
