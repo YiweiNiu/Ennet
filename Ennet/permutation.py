@@ -184,7 +184,8 @@ def permutation(G, permutation_times, threads):
 
     emp_p_n = {}
 
-    for random_p_n in results:
+    for i in results:
+        random_p_n = i.get()    # ApplyResult, use get to access the value
         for gene in random_p_n:
             if gene in emp_p_n:
                 emp_p_n[gene].append(random_p_n[gene])
