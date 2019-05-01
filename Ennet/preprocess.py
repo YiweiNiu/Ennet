@@ -122,7 +122,7 @@ def preprocess(network_file, enhancer_file):
 
 def test():
     network_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/networks/net.txt'
-    enhancer_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/interactions/breast.ep'
+    enhancer_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/interactions/brain.inter.name'
 
     G = preprocess(network_file, enhancer_file)
 

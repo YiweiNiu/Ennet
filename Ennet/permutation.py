@@ -154,7 +154,7 @@ def permutation_helper(G):
     return random_p_n
 
 
-def permutation(G, permutation_times, threads):
+def permutation(G, permutation_times, threads=None):
     '''
     permutation test: random network 500 times to generate emperical distribution of final score
 
@@ -211,7 +211,31 @@ def permutation(G, permutation_times, threads):
 
 
 def test():
-    pass
+    network_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/networks/net.txt'
+    enhancer_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/interactions/brain.inter.name'
+    snp_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/SNPs/brain.rm.hyper'
+
+    G = preprocess.preprocess(network_file, enhancer_file)
+    G = escore.escore(snp_file, G, r)
+    G = permutation(G, 100, 8)
+
+    gene_enh_count = escore.get_value_from_graph(G, 'gene', 'enh_num')
+    gene_enh_len = escore.get_value_from_graph(G, 'gene', 'enh_len')
+    gene_snp_count = escore.get_value_from_graph(G, 'gene', 'snp_count')
+    gene_pvalue = escore.get_value_from_graph(G, 'gene', 'pvalue')
+    gene_p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
+    gene_p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
+    gene_emp_p = escore.get_value_from_graph(G, 'gene', 'emp_p')
+    gene_emp_q = escore.get_value_from_graph(G, 'gene', 'emp_q')
+
+    fout = open('escore_test.txt', 'w')
+
+    for gene in gene_enh_count:
+        fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene],
+                              str(gene_snp_count[gene]), str(gene_pvalue[gene]),
+                              str(gene_p_0[gene]), str(gene_p_n[gene]),
+                              str(gene_emp_p[gene]), str(gene_emp_q[gene]))]) + '\n')
+    fout.close()
 
 
 if __name__ == "__main__":

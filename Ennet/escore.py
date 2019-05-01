@@ -309,7 +309,7 @@ def get_value_from_graph(G, node_type, value_type):
     return value_dict
 
 
-def escore(snp_file, G, r):
+def escore(snp_file, G, r=None):
     '''
     escore
 
@@ -358,11 +358,27 @@ def escore(snp_file, G, r):
 
 def test():
     network_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/networks/net.txt'
-    enhancer_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/interactions/breast.ep'
-    snp_file = ''
+    enhancer_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/interactions/brain.inter.name'
+    snp_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/SNPs/brain.rm.hyper'
 
     G = preprocess.preprocess(network_file, enhancer_file)
+
     G = escore(snp_file, G)
+
+    gene_enh_count = escore.get_value_from_graph(G, 'gene', 'enh_num')
+    gene_enh_len = escore.get_value_from_graph(G, 'gene', 'enh_len')
+    gene_snp_count = escore.get_value_from_graph(G, 'gene', 'snp_count')
+    gene_pvalue = escore.get_value_from_graph(G, 'gene', 'pvalue')
+    gene_p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
+    gene_p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
+
+    fout = open('escore_test.txt', 'w')
+
+    for gene in gene_enh_count:
+        fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene],
+                              str(gene_snp_count[gene]), str(gene_pvalue[gene]),
+                              str(gene_p_0[gene]), str(gene_p_n[gene]))]) + '\n')
+    fout.close()
 
 
 if __name__ == "__main__":
