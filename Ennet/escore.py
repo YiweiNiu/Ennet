@@ -159,7 +159,7 @@ def normalize_cols(A):
     return normalize(A, norm='l1', axis=0)
 
 
-@jit(nopython=True)
+@jit
 def diffusion_matrix(A, r):
     '''
     Perform the RWR process
@@ -173,7 +173,7 @@ def diffusion_matrix(A, r):
     return r*np.linalg.inv(np.eye(*np.shape(W))-(1-r)*W)
 
 
-@jit(nopython=True)
+@jit
 def difference(A, r):
     '''
     Find difference between fraction of distribution on neighbors and non-neighbors
