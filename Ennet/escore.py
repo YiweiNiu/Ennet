@@ -34,7 +34,10 @@ def count_enh_snps(G):
     get snp count of enhancers
     '''
 
-    snp_pos = {contig:{} for contig in G.graph['contigs']}  # a dict of each contig
+    snp_pos = {}
+    for contig in G.graph['contigs']:
+        snp_pos[contig] = {}
+    #snp_pos = {contig:{} for contig in G.graph['contigs']}  # a dict of each contig
 
     fin = open(G.graph['snp_file'], 'r')
     for line in fin:
