@@ -299,7 +299,7 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
     return H
 
 
-@jit(nopython=True)
+#@jit(nopython=True) # numba 0.44 supports dict(), 0.43 not
 def get_value_from_graph(G, node_type, value_type):
     '''
     get values from a graph
@@ -310,7 +310,7 @@ def get_value_from_graph(G, node_type, value_type):
 
     @return - a dict of key-value
     '''
-    value_dict = {}
+    value_dict = dict()
 
     for node in G:
         if G.nodes[node]['type'] == node_type:
