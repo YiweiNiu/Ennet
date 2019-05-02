@@ -18,7 +18,6 @@ import networkx as nx
 import numpy as np
 from scipy.optimize import ridder
 from scipy.stats import poisson
-from scipy.linalg import inv
 from sklearn.preprocessing import normalize
 from math import log10
 
@@ -152,7 +151,7 @@ def diffusion_matrix(A, r):
     @ return diffusion matrix
     '''
     W = normalize(A, norm='l1', axis=0) # column normalized
-    return r*inv(np.eye(*np.shape(W))-(1-r)*W)
+    return r*np.linalg.inv(np.eye(*np.shape(W))-(1-r)*W)
 
 
 def difference(A, r):
@@ -259,7 +258,7 @@ def stationary_p(G):
     gene_p_0 = get_value_from_graph(G, 'gene', 'p_0')
     p_0 = np.array(list(gene_p_0.values()))
 
-    p_n = list(r*np.dot(inv(np.eye(*np.shape(W))-(1-r)*W), p_0))
+    p_n = list(r*np.dot(np.linalg.inv(np.eye(*np.shape(W))-(1-r)*W), p_0))
 
     for i, gene in enumerate(list(gene_p_0.keys())):
         G.nodes[gene]['p_n'] = p_n[i]
