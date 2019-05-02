@@ -138,14 +138,10 @@ def random_net(G):
     return GG
 
 
-def permutation_helper(G):
+def permutation_helper(G, p_0, r):
     '''
     helper function for permutation
     '''
-    r = G.graph['r']
-    p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
-    p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
-
     GG = random_net(G)
     GG = escore.put_value_into_graph(p_0, GG, 'gene', 'p_0')
     GG.graph['r'] = r
@@ -171,12 +167,15 @@ def permutation(G, permutation_times, threads=None):
 
     logger.info('Start network permutation, using %s threads.' % threads)
 
+    r = G.graph['r']
+    p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
+    p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
+
     pool = Pool(threads)
     results = []
-
     # permutation the network to generate emperical p_n for each gene
     for i in range(permutation_times):
-        results.append(pool.apply_async(permutation_helper, args=(G,)))
+        results.append(pool.apply_async(permutation_helper, args=(G,p_0,r,)))
 
     pool.close()
     pool.join()
