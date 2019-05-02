@@ -36,21 +36,21 @@ def count_enh_snps(G):
 
     snp_pos = {contig:{} for contig in G.graph['contigs']}  # a dict of each contig
 
-    with open(G.graph['snp_file'], 'r') as fin:
-        for line in fin:
-            line = line.strip()
-            if line.startswith('#'):
-                continue
-            line = line.split('\t')
-            snp_chr, snp_locus = line[0], line[1]
+    fin = open(G.graph['snp_file'], 'r')
+    for line in fin:
+        line = line.strip()
+        if line.startswith('#'):
+            continue
+        line = line.split('\t')
+        snp_chr, snp_locus = line[0], line[1]
 
-            if snp_chr not in snp_pos:
-                continue
+        if snp_chr not in snp_pos:
+            continue
 
-            if snp_locus in snp_pos[snp_chr]:
-                snp_pos[snp_chr][snp_locus] += 1
-            else:
-                snp_pos[snp_chr][snp_locus] = 1
+        if snp_locus in snp_pos[snp_chr]:
+            snp_pos[snp_chr][snp_locus] += 1
+        else:
+            snp_pos[snp_chr][snp_locus] = 1
 
     for node in G:
         if G.nodes[node]['type'] == 'enhancer':
