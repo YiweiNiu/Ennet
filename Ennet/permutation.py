@@ -229,7 +229,7 @@ def test():
     gene_emp_p = escore.get_value_from_graph(G, 'gene', 'emp_p')
     gene_emp_q = escore.get_value_from_graph(G, 'gene', 'emp_q')
 
-    fout = open('escore_test.txt', 'w')
+    fout = open('permutation_test.txt', 'w')
 
     for gene in gene_enh_count:
         fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene]),
