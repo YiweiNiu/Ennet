@@ -28,15 +28,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-@jit(nopython=True)
+@jit
 def count_enh_snps(G):
     '''
     get snp count of enhancers
     '''
 
-    snp_pos = {}
+    snp_pos = dict()
     for contig in G.graph['contigs']:   # numba likes for loops
-        snp_pos[contig] = {}
+        snp_pos[contig] = dict()
     #snp_pos = {contig:{} for contig in G.graph['contigs']}  # a dict of each contig
 
     fin = open(G.graph['snp_file'], 'r')
@@ -299,7 +299,7 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
     return H
 
 
-#@jit(nopython=True) # numba 0.44 supports dict(), 0.43 not
+@jit() # numba 0.44 supports dict(), 0.43 not, nopython=true will get error
 def get_value_from_graph(G, node_type, value_type):
     '''
     get values from a graph
