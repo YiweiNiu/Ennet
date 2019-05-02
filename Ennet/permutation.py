@@ -144,6 +144,11 @@ def random_net(G):
 def get_emp_p(G, results):
     '''
     get emp_p from permutation test
+
+    @parameter G - graph
+    @parameter results - ApplyResult of pool.apply_async
+
+    @return G - graph
     '''
     p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
     emp_p_n = {}
@@ -165,10 +170,18 @@ def get_emp_p(G, results):
 
         G.nodes[gene]['emp_p'] = p
 
+    return G
+
 
 def permutation_helper(G, p_0, r):
     '''
     helper function for permutation
+
+    @parameter G - graph
+    @parameter p_0 - initial p_0
+    @parameter r - restart possibility
+
+    @return random_p_n - p_n on random network
     '''
     GG = random_net(G)
     GG = escore.put_value_into_graph(p_0, GG, 'gene', 'p_0')
