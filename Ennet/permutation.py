@@ -99,7 +99,7 @@ def multi_test_pvalues(G):
     '''
 
     # get gene pvalues dict
-    gene_emp_p = get_value_from_graph(G, 'gene', 'emp_p')
+    gene_emp_p = escore.get_value_from_graph(G, 'gene', 'emp_p')
 
     genes = gene_emp_p.keys()
     emp_p = gene_emp_p.values()
