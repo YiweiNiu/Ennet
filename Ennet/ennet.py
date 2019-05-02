@@ -39,7 +39,7 @@ def ennet(args):
     G = escore.escore(snp_file, G, args.r)
 
     # permutation test
-    G = permutation.permutation(G, 100, args.threads)
+    G = permutation.permutation(G, args.permutation, args.threads)
 
     end = datetime.now()
 
@@ -59,6 +59,7 @@ def main():
     parser.add_argument('-e', '--enhancer', required=True, type=str, help='Path to enhancer-gene pairs.', metavar='', dest="enhancer")
     parser.add_argument('-m', '--mutation', required=True, type=str, help='Path to snp file.', metavar='', dest="mutation")
     parser.add_argument('-r', type=float, help='Restart possibility. Choose between 0 and 1.', metavar='', dest="r")
+    parser.add_argument('-p', '--permutation', default=500, type=int, help='Permutation times.', metavar='', dest="permutation")
     parser.add_argument('-o', '--output', default='ennet_res', help='Output prefix.', metavar='', dest="output")
 
     args = parser.parse_args()
