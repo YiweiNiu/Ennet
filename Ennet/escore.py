@@ -20,36 +20,41 @@ from scipy.optimize import ridder
 from scipy.stats import poisson
 from sklearn.preprocessing import normalize
 from math import log10
-
-import logging    # logging
+from numba import jit
+import logging
 
 # logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
+@jit
 def count_enh_snps(G):
     '''
     get snp count of enhancers
     '''
 
-    snp_pos = {contig:{} for contig in G.graph['contigs']}  # a dict of each contig
+    snp_pos = dict()
+    for contig in G.graph['contigs']:   # numba likes for loops
+        snp_pos[contig] = dict()
+    #snp_pos = {contig:{} for contig in G.graph['contigs']}  # a dict of each contig
 
-    with open(G.graph['snp_file'], 'r') as fin:
-        for line in fin:
-            line = line.strip()
-            if line.startswith('#'):
-                continue
-            line = line.split('\t')
-            snp_chr, snp_locus = line[0], line[1]
+    fin = open(G.graph['snp_file'], 'r')
+    # with open(G.graph['snp_file'], 'r') as fin:   # numba does not support with
+    for line in fin:
+        line = line.strip()
+        if line.startswith('#'):
+            continue
+        line = line.split('\t')
+        snp_chr, snp_locus = line[0], line[1]
 
-            if snp_chr not in snp_pos:
-                continue
+        if snp_chr not in snp_pos:
+            continue
 
-            if snp_locus in snp_pos[snp_chr]:
-                snp_pos[snp_chr][snp_locus] += 1
-            else:
-                snp_pos[snp_chr][snp_locus] = 1
+        if snp_locus in snp_pos[snp_chr]:
+            snp_pos[snp_chr][snp_locus] += 1
+        else:
+            snp_pos[snp_chr][snp_locus] = 1
 
     for node in G:
         if G.nodes[node]['type'] == 'enhancer':
@@ -69,6 +74,7 @@ def count_enh_snps(G):
     return G
 
 
+@jit
 def count_gene_snps(G):
     '''
     get snp count of genes
@@ -92,6 +98,7 @@ def count_gene_snps(G):
     return G
 
 
+@jit
 def get_gene_poisson_p(G):
     '''
     update the gene_pvalue dict
@@ -141,6 +148,18 @@ def get_gene_poisson_p(G):
     return G
 
 
+def normalize_cols(A):
+    '''
+    normalize matrix by cols
+    
+    @parameter A - adjacency matrix of a graph
+
+    @return - column-normalized matrix
+    '''
+    return normalize(A, norm='l1', axis=0)
+
+
+@jit
 def diffusion_matrix(A, r):
     '''
     Perform the RWR process
@@ -150,10 +169,11 @@ def diffusion_matrix(A, r):
 
     @ return diffusion matrix
     '''
-    W = normalize(A, norm='l1', axis=0) # column normalized
+    W = normalize_cols(A) # column normalized
     return r*np.linalg.inv(np.eye(*np.shape(W))-(1-r)*W)
 
 
+@jit
 def difference(A, r):
     '''
     Find difference between fraction of distribution on neighbors and non-neighbors
@@ -171,6 +191,7 @@ def difference(A, r):
     return n-s
 
 
+#@jit, numba does not support ridder function
 def choose_r(G):
     '''
     Find value of r that sets difference to zero between fraction of distribution on neighbors and non-neighbors to zero.
@@ -209,6 +230,7 @@ def plot_root_finding(G):
     plt.show()
 
 
+@jit
 def get_p_0(G, score_method='log10_pvalue'):
     '''
     get init p0 of RWR
@@ -243,6 +265,7 @@ def get_p_0(G, score_method='log10_pvalue'):
     return G
 
 
+@jit
 def stationary_p(G):
     '''
     Calculate p when RWR reaches a stationary distribution
@@ -252,7 +275,7 @@ def stationary_p(G):
     @return G - graph
     '''
     A = nx.to_numpy_array(G)
-    W = normalize(A, norm='l1', axis=0)
+    W = normalize_cols(A)
     r = G.graph['r']
 
     gene_p_0 = get_value_from_graph(G, 'gene', 'p_0')
@@ -266,6 +289,7 @@ def stationary_p(G):
     return G
 
 
+@jit
 def put_value_into_graph(value_dict, G, node_type, value_type):
     '''
     put values into a graph
@@ -286,6 +310,7 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
     return H
 
 
+@jit # numba 0.44 supports dict(), 0.43 not, nopython=true will get error
 def get_value_from_graph(G, node_type, value_type):
     '''
     get values from a graph
@@ -296,7 +321,7 @@ def get_value_from_graph(G, node_type, value_type):
 
     @return - a dict of key-value
     '''
-    value_dict = {}
+    value_dict = dict()
 
     for node in G:
         if G.nodes[node]['type'] == node_type:
