@@ -337,6 +337,7 @@ def escore(snp_file, G, r=None):
         G.graph['r'] = r
         logger.info('Using restart possibility provided: %s' % r)
     else:
+        logger.info('Restart possibility r not provided. Will be computed from the network.')
         G = choose_r(G)
         logger.info('Choosing restart possibility done: r is: %s' % G.graph['r'])
 
@@ -373,9 +374,9 @@ def test():
     fout = open('escore_test.txt', 'w')
 
     for gene in gene_enh_count:
-        fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene],
+        fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene]),
                               str(gene_snp_count[gene]), str(gene_pvalue[gene]),
-                              str(gene_p_0[gene]), str(gene_p_n[gene]))]) + '\n')
+                              str(gene_p_0[gene]), str(gene_p_n[gene])]) + '\n')
     fout.close()
 
 
