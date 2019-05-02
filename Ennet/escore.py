@@ -148,6 +148,17 @@ def get_gene_poisson_p(G):
     return G
 
 
+def normalize_cols(A):
+    '''
+    normalize matrix by cols
+    
+    @parameter A - adjacency matrix of a graph
+
+    @return - column-normalized matrix
+    '''
+    return normalize(A, norm='l1', axis=0)
+
+
 @jit(nopython=True)
 def diffusion_matrix(A, r):
     '''
@@ -158,7 +169,7 @@ def diffusion_matrix(A, r):
 
     @ return diffusion matrix
     '''
-    W = normalize(A, norm='l1', axis=0) # column normalized
+    W = normalize_cols(A) # column normalized
     return r*np.linalg.inv(np.eye(*np.shape(W))-(1-r)*W)
 
 
@@ -264,7 +275,7 @@ def stationary_p(G):
     @return G - graph
     '''
     A = nx.to_numpy_array(G)
-    W = normalize(A, norm='l1', axis=0)
+    W = normalize_cols(A)
     r = G.graph['r']
 
     gene_p_0 = get_value_from_graph(G, 'gene', 'p_0')
