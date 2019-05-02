@@ -35,11 +35,12 @@ def count_enh_snps(G):
     '''
 
     snp_pos = {}
-    for contig in G.graph['contigs']:
+    for contig in G.graph['contigs']:   # numba likes for loops
         snp_pos[contig] = {}
     #snp_pos = {contig:{} for contig in G.graph['contigs']}  # a dict of each contig
 
     fin = open(G.graph['snp_file'], 'r')
+    # with open(G.graph['snp_file'], 'r') as fin:   # numba does not support with
     for line in fin:
         line = line.strip()
         if line.startswith('#'):
@@ -178,7 +179,7 @@ def difference(A, r):
     return n-s
 
 
-@jit
+#@jit, numba does not support ridder function
 def choose_r(G):
     '''
     Find value of r that sets difference to zero between fraction of distribution on neighbors and non-neighbors to zero.
