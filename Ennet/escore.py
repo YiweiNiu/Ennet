@@ -74,7 +74,7 @@ def count_enh_snps(G):
     return G
 
 
-@jit(nopython=True)
+@jit
 def count_gene_snps(G):
     '''
     get snp count of genes
@@ -98,7 +98,7 @@ def count_gene_snps(G):
     return G
 
 
-@jit(nopython=True)
+@jit
 def get_gene_poisson_p(G):
     '''
     update the gene_pvalue dict
@@ -219,7 +219,7 @@ def plot_root_finding(G):
     plt.show()
 
 
-@jit(nopython=True)
+@jit
 def get_p_0(G, score_method='log10_pvalue'):
     '''
     get init p0 of RWR
@@ -254,7 +254,7 @@ def get_p_0(G, score_method='log10_pvalue'):
     return G
 
 
-@jit(nopython=True)
+@jit
 def stationary_p(G):
     '''
     Calculate p when RWR reaches a stationary distribution
@@ -299,7 +299,7 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
     return H
 
 
-@jit() # numba 0.44 supports dict(), 0.43 not, nopython=true will get error
+@jit # numba 0.44 supports dict(), 0.43 not, nopython=true will get error
 def get_value_from_graph(G, node_type, value_type):
     '''
     get values from a graph
