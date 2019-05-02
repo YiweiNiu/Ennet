@@ -217,6 +217,7 @@ def test():
 
     G = preprocess.preprocess(network_file, enhancer_file)
     G = escore.escore(snp_file, G, r)
+
     G = permutation(G, 100, 8)
 
     gene_enh_count = escore.get_value_from_graph(G, 'gene', 'enh_num')

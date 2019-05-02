@@ -367,12 +367,12 @@ def test():
 
     G = escore(snp_file, G)
 
-    gene_enh_count = escore.get_value_from_graph(G, 'gene', 'enh_num')
-    gene_enh_len = escore.get_value_from_graph(G, 'gene', 'enh_len')
-    gene_snp_count = escore.get_value_from_graph(G, 'gene', 'snp_count')
-    gene_pvalue = escore.get_value_from_graph(G, 'gene', 'pvalue')
-    gene_p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
-    gene_p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
+    gene_enh_count = get_value_from_graph(G, 'gene', 'enh_num')
+    gene_enh_len = get_value_from_graph(G, 'gene', 'enh_len')
+    gene_snp_count = get_value_from_graph(G, 'gene', 'snp_count')
+    gene_pvalue = get_value_from_graph(G, 'gene', 'pvalue')
+    gene_p_0 = get_value_from_graph(G, 'gene', 'p_0')
+    gene_p_n = get_value_from_graph(G, 'gene', 'p_n')
 
     fout = open('escore_test.txt', 'w')
 
