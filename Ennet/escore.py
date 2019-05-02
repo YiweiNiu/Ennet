@@ -252,7 +252,8 @@ def stationary_p(G):
 
     @return G - graph
     '''
-    W = nx.to_numpy_matrix(G)
+    A = nx.to_numpy_matrix(G)
+    W = normalize(A, norm='l1', axis=0)
     r = G.graph['r']
 
     gene_p_0 = get_value_from_graph(G, 'gene', 'p_0')
