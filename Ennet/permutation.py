@@ -15,10 +15,10 @@ import copy
 import networkx as nx
 import numpy as np
 from scipy.stats import norm
+import logging    # logging
 
 import escore
-
-import logging    # logging
+import preprocess
 
 # logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
