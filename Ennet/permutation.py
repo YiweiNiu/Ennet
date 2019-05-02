@@ -16,6 +16,7 @@ import networkx as nx
 import numpy as np
 from scipy.stats import norm
 import logging    # logging
+from numba import jit
 
 import escore
 import preprocess
@@ -46,6 +47,7 @@ def pstdev(data):
     return pvar**0.5
 
 
+@jit
 def multiple_testing_correction(pvalues, correction_type="Benjamini-Hochberg"):
     """
     Copyright 2017 Francisco Pina Martins <f.pinamartins@gmail.com>
@@ -138,6 +140,32 @@ def random_net(G):
     return GG
 
 
+@jit
+def get_emp_p(G, results):
+    '''
+    get emp_p from permutation test
+    '''
+    p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
+    emp_p_n = {}
+
+    for i in results:
+        random_p_n = i.get()    # ApplyResult, use get to access the value
+        for gene in random_p_n:
+            if gene in emp_p_n:
+                emp_p_n[gene].append(random_p_n[gene])
+            else:
+                emp_p_n[gene] = [random_p_n[gene]]
+
+    # test each gene using norm distribution
+    for gene in emp_p_n:
+        tmp_list = emp_p_n[gene]
+        mu, std = mean(tmp_list), pstdev(tmp_list)
+        rv = norm(mu, std)
+        p = rv.sf(p_n[gene])
+
+        G.nodes[gene]['emp_p'] = p
+
+
 def permutation_helper(G, p_0, r):
     '''
     helper function for permutation
@@ -169,7 +197,7 @@ def permutation(G, permutation_times, threads=None):
 
     r = G.graph['r']
     p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
-    p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
+
 
     pool = Pool(threads)
     results = []
@@ -180,27 +208,9 @@ def permutation(G, permutation_times, threads=None):
     pool.close()
     pool.join()
 
-    emp_p_n = {}
-
-    for i in results:
-        random_p_n = i.get()    # ApplyResult, use get to access the value
-        for gene in random_p_n:
-            if gene in emp_p_n:
-                emp_p_n[gene].append(random_p_n[gene])
-            else:
-                emp_p_n[gene] = [random_p_n[gene]]
-
     logger.info('Network permutation done.')
 
-    # test each gene using norm distribution
-    for gene in emp_p_n:
-        tmp_list = emp_p_n[gene]
-        mu, std = mean(tmp_list), pstdev(tmp_list)
-        rv = norm(mu, std)
-        p = rv.sf(p_n[gene])
-
-        G.nodes[gene]['emp_p'] = p
-
+    G = get_emp_p(G, results)
     logger.info('Computing emperical p-values done.')
 
     # multi-test adjusting

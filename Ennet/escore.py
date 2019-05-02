@@ -20,14 +20,15 @@ from scipy.optimize import ridder
 from scipy.stats import poisson
 from sklearn.preprocessing import normalize
 from math import log10
-
-import logging    # logging
+from numba import jit
+import logging
 
 # logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
+@jit
 def count_enh_snps(G):
     '''
     get snp count of enhancers
@@ -69,6 +70,7 @@ def count_enh_snps(G):
     return G
 
 
+@jit
 def count_gene_snps(G):
     '''
     get snp count of genes
@@ -92,6 +94,7 @@ def count_gene_snps(G):
     return G
 
 
+@jit
 def get_gene_poisson_p(G):
     '''
     update the gene_pvalue dict
@@ -141,6 +144,7 @@ def get_gene_poisson_p(G):
     return G
 
 
+@jit
 def diffusion_matrix(A, r):
     '''
     Perform the RWR process
@@ -171,6 +175,7 @@ def difference(A, r):
     return n-s
 
 
+@jit
 def choose_r(G):
     '''
     Find value of r that sets difference to zero between fraction of distribution on neighbors and non-neighbors to zero.
@@ -243,6 +248,7 @@ def get_p_0(G, score_method='log10_pvalue'):
     return G
 
 
+@jit
 def stationary_p(G):
     '''
     Calculate p when RWR reaches a stationary distribution
