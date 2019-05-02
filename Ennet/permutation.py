@@ -109,7 +109,7 @@ def multi_test_pvalues(G):
     gene_qvalue = {genes[i]:qvalues[i] for i in range(len(genes))}
 
     # put into the graph
-    G = put_value_into_graph(gene_qvalue, G, 'gene', 'emp_q')
+    G = escore.put_value_into_graph(gene_qvalue, G, 'gene', 'emp_q')
 
     return G
 
