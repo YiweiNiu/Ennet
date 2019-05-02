@@ -9,6 +9,7 @@ Functions included:
 
 '''
 
+import sys
 from multiprocessing import cpu_count, Pool
 import copy
 import networkx as nx
@@ -216,9 +217,9 @@ def test():
     snp_file = '/home/niuyw/Project/RegulatorySNP_170808/ennet_180821/data/SNPs/brain.rm.hyper'
 
     G = preprocess.preprocess(network_file, enhancer_file)
-    G = escore.escore(snp_file, G, r)
+    G = escore.escore(snp_file, G, 0.46636)
 
-    G = permutation(G, 100, 8)
+    G = permutation(G, 10, 8)
 
     gene_enh_count = escore.get_value_from_graph(G, 'gene', 'enh_num')
     gene_enh_len = escore.get_value_from_graph(G, 'gene', 'enh_len')
@@ -232,10 +233,10 @@ def test():
     fout = open('escore_test.txt', 'w')
 
     for gene in gene_enh_count:
-        fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene],
+        fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene]),
                               str(gene_snp_count[gene]), str(gene_pvalue[gene]),
                               str(gene_p_0[gene]), str(gene_p_n[gene]),
-                              str(gene_emp_p[gene]), str(gene_emp_q[gene]))]) + '\n')
+                              str(gene_emp_p[gene]), str(gene_emp_q[gene])]) + '\n')
     fout.close()
 
 

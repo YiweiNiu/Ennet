@@ -181,7 +181,7 @@ def choose_r(G):
 
     @return G - a graph
     '''
-    A = nx.to_numpy_matrix(G)
+    A = nx.to_numpy_array(G)
     r = ridder(lambda r: difference(A, r), a=0.01, b=0.99, xtol=0.001)
 
     G.graph['r'] = r
@@ -195,7 +195,7 @@ def plot_root_finding(G):
     @parameter G - a graph
     '''
 
-    A = nx.to_numpy_matrix(G)
+    A = nx.to_numpy_array(G)
 
     f = lambda x: difference(A, x)
     x = np.linspace(0, 1, 100)
@@ -252,7 +252,7 @@ def stationary_p(G):
 
     @return G - graph
     '''
-    A = nx.to_numpy_matrix(G)
+    A = nx.to_numpy_array(G)
     W = normalize(A, norm='l1', axis=0)
     r = G.graph['r']
 

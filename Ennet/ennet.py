@@ -4,9 +4,8 @@
 Purpose: main function of ennet.
 
 '''
-
+import sys
 import argparse
-
 from datetime import datetime
 import networkx as nx
 from collections import OrderedDict
@@ -123,6 +122,6 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        sys.stderr.write("User interrupted me! ;-) Bye!\n")
+        logger.error("User interrupted me! ;-) Bye!")
         sys.exit(0)
 
