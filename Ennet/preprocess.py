@@ -67,11 +67,13 @@ def get_gene_enh_pair(enhancer_file, G):
 
             line = line.split('\t')
 
-            enh_target = line[3]
+            contig, enh_target = line[0], line[3]
 
             # exclude genes not in the gene-gene network
             if enh_target not in G:
                 continue
+
+            G.graph['contigs'].add(contig)  # store all the contigs, used in counting snps
 
             enhancer = '@'.join(line[:3])
             enh_len = int(line[2]) - int(line[1])
