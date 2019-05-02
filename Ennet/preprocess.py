@@ -131,7 +131,12 @@ def test():
 
 if __name__ == "__main__":
 
-    test()
+    try:
+        test()
+    except KeyboardInterrupt:
+        logger.error("User interrupted me! ;-) Bye!")
+        sys.exit(0)
+
 
 
 

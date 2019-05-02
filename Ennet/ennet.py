@@ -119,6 +119,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
 
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.stderr.write("User interrupted me! ;-) Bye!\n")
+        sys.exit(0)
 
