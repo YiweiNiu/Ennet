@@ -28,7 +28,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-@jit
+@jit(nopython=True)
 def count_enh_snps(G):
     '''
     get snp count of enhancers
@@ -74,7 +74,7 @@ def count_enh_snps(G):
     return G
 
 
-@jit
+@jit(nopython=True)
 def count_gene_snps(G):
     '''
     get snp count of genes
@@ -98,7 +98,7 @@ def count_gene_snps(G):
     return G
 
 
-@jit
+@jit(nopython=True)
 def get_gene_poisson_p(G):
     '''
     update the gene_pvalue dict
@@ -148,7 +148,7 @@ def get_gene_poisson_p(G):
     return G
 
 
-@jit
+@jit(nopython=True)
 def diffusion_matrix(A, r):
     '''
     Perform the RWR process
@@ -162,6 +162,7 @@ def diffusion_matrix(A, r):
     return r*np.linalg.inv(np.eye(*np.shape(W))-(1-r)*W)
 
 
+@jit(nopython=True)
 def difference(A, r):
     '''
     Find difference between fraction of distribution on neighbors and non-neighbors
@@ -218,6 +219,7 @@ def plot_root_finding(G):
     plt.show()
 
 
+@jit(nopython=True)
 def get_p_0(G, score_method='log10_pvalue'):
     '''
     get init p0 of RWR
@@ -252,7 +254,7 @@ def get_p_0(G, score_method='log10_pvalue'):
     return G
 
 
-@jit
+@jit(nopython=True)
 def stationary_p(G):
     '''
     Calculate p when RWR reaches a stationary distribution
@@ -276,6 +278,7 @@ def stationary_p(G):
     return G
 
 
+@jit(nopython=True)
 def put_value_into_graph(value_dict, G, node_type, value_type):
     '''
     put values into a graph
@@ -296,6 +299,7 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
     return H
 
 
+@jit(nopython=True)
 def get_value_from_graph(G, node_type, value_type):
     '''
     get values from a graph
