@@ -15,7 +15,7 @@ import copy
 import networkx as nx
 import numpy as np
 from scipy.stats import norm
-import logging    # logging
+import logging
 from numba import jit
 
 import escore

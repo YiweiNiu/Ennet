@@ -289,7 +289,7 @@ def stationary_p(G):
     return G
 
 
-@jit(nopython=True)
+@jit
 def put_value_into_graph(value_dict, G, node_type, value_type):
     '''
     put values into a graph
