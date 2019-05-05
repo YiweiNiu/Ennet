@@ -15,6 +15,7 @@ import escore
 import permutation
 
 import logging    # logging
+import pickle
 
 # logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -114,6 +115,10 @@ def main():
         positive_gene_detail.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene]),
                                               str(gene_snp_count[gene]), str(positive_gene_rank[gene])])+'\n')
     positive_gene_detail.close()
+
+    network_object_file = open('%s_network.object' %(output_prefix), 'w')
+    pickle.dump(G, network_object_file, -1)
+    network_object_file.close()
 
     logger.info('Cheers.')
 
