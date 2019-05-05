@@ -123,7 +123,6 @@ def random_net(G):
 
     @return GG - random graph that only contains genes
     '''
-
     sequence = [d for (_, d) in G.degree]
     GG = nx.configuration_model(sequence)
     GG = nx.Graph(GG)
@@ -209,7 +208,6 @@ def permutation(G, permutation_times, threads=None):
 
     r = G.graph['r']
     p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
-
 
     pool = Pool(threads)
     results = []

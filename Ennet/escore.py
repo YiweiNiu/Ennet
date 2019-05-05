@@ -267,7 +267,6 @@ def stationary_p(G):
     return G
 
 
-@jit
 def put_value_into_graph(value_dict, G, node_type, value_type):
     '''
     put values into a graph
@@ -279,7 +278,6 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
 
     @return - a a graph
     '''
-
     H = G.copy()
     for node in value_dict:
         if H.nodes[node]['type'] == node_type:
