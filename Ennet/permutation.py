@@ -168,6 +168,7 @@ def get_emp_p(G, results):
         rv = norm(mu, std)
         p = rv.sf(p_n[gene])
 
+        G.nodes[gene]['emp_p_n'] = emp_p_n[gene] #for qqplot
         G.nodes[gene]['emp_p'] = p
 
     return G
