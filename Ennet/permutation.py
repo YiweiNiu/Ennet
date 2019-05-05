@@ -47,7 +47,6 @@ def pstdev(data):
     return pvar**0.5
 
 
-@jit
 def multiple_testing_correction(pvalues, correction_type="Benjamini-Hochberg"):
     """
     Copyright 2017 Francisco Pina Martins <f.pinamartins@gmail.com>
