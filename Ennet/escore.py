@@ -208,28 +208,6 @@ def choose_r(G):
     return G
 
 
-def plot_root_finding(G):
-    '''
-    plot the process of root finding
-
-    @parameter G - a graph
-    '''
-
-    A = nx.to_numpy_array(G)
-
-    f = lambda x: difference(A, x)
-    x = np.linspace(0, 1, 100)
-    y = f(x)
-    print(x, y)
-    plt.plot(x, y)
-    plt.axhline(0, color='k')
-    plt.xlim(0, 1)
-
-    plt.axis('off')
-    plt.savefig("roo_finding.png", dpi=300)
-    plt.show()
-
-
 @jit
 def get_p_0(G, score_method='log10_pvalue'):
     '''
@@ -310,7 +288,6 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
     return H
 
 
-@jit # numba 0.44 supports dict(), 0.43 not, nopython=true will get error
 def get_value_from_graph(G, node_type, value_type):
     '''
     get values from a graph
