@@ -116,8 +116,8 @@ def main():
                                               str(gene_snp_count[gene]), str(positive_gene_rank[gene])])+'\n')
     positive_gene_detail.close()
 
-    network_object_file = open('%s_network.object' %(output_prefix), 'w')
-    pickle.dump(G, network_object_file, -1)
+    network_object_file = open('%s_network.pickle' %(output_prefix), 'wb')
+    pickle.dump(G, network_object_file)
     network_object_file.close()
 
     logger.info('Cheers.')
