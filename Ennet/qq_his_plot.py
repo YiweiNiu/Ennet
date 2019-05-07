@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from scipy.stats import probplot
 import matplotlib as mpl
 import networkx as nx
@@ -54,7 +55,7 @@ def qq_his_plot(G, output_name):
     probplot(emp_p_n[gene_list[5]], plot=plt, sparams=(mu,std))
     plt.title(gene_list[5])
     plt.tight_layout()
-    plt.savefig(output_name+"_qqplot.png")
+    plt.savefig(output_name+"_qqplot.pdf", dpi=300)
     plt.close()
     
     plt.figure(2)
@@ -77,12 +78,12 @@ def qq_his_plot(G, output_name):
     sns.distplot(emp_p_n[gene_list[5]], hist=False, rug=True);
     plt.title(gene_list[5])
     plt.tight_layout()
-    plt.savefig(output_name+"_histogram.png")
+    plt.savefig(output_name+"_histogram.pdf", dpi=300)
     plt.close()
     
 
 if __name__=="__main__":
-    pkl_file = open("/home/niuyw/Project/RegulatorySNP_170808/ennet_190429/20903b5/breast_network.pickle",'r')
+    pkl_file = open(sys.argv[1], 'r')
     G = pickle.load(pkl_file)
     qq_his_plot(G,"breast")
     pkl_file.close()
