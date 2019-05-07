@@ -33,6 +33,7 @@ def qq_his_plot(G, output_name):
     plt.subplot(321)
     mu, std = permutation.mean(emp_p_n[gene_list[0]]), permutation.pstdev(emp_p_n[gene_list[0]])
     x = [(i-mu)/std for i in emp_p_n[gene_list[0]]]
+    plt.set_xlim([min(x), max(x)])
     probplot(x, plot=plt)
     plt.title(gene_list[0])
 
