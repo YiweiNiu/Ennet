@@ -96,5 +96,5 @@ def qq_his_plot(G, output_name):
 if __name__=="__main__":
     pkl_file = open(sys.argv[1], 'r')
     G = pickle.load(pkl_file)
-    qq_his_plot(G,"breast")
+    qq_his_plot(G, sys.argv[2])
     pkl_file.close()
