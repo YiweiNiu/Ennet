@@ -32,27 +32,38 @@ def qq_his_plot(G, output_name):
     plt.figure(1)
     plt.subplot(321)
     mu, std = permutation.mean(emp_p_n[gene_list[0]]), permutation.pstdev(emp_p_n[gene_list[0]])
-    probplot(emp_p_n[gene_list[0]], plot=plt, sparams=(mu,std))
+    x = [(i-mu)/std for i in emp_p_n[gene_list[0]]]
+    probplot(x, plot=plt)
     plt.title(gene_list[0])
+
     plt.subplot(322)
     mu, std = permutation.mean(emp_p_n[gene_list[1]]), permutation.pstdev(emp_p_n[gene_list[1]])
-    probplot(emp_p_n[gene_list[1]], plot=plt, sparams=(mu,std))
+    x = [(i-mu)/std for i in emp_p_n[gene_list[1]]]
+    probplot(x, plot=plt)
     plt.title(gene_list[1])
+
     plt.subplot(323)
     mu, std = permutation.mean(emp_p_n[gene_list[2]]), permutation.pstdev(emp_p_n[gene_list[2]])
-    probplot(emp_p_n[gene_list[2]], plot=plt, sparams=(mu,std))
+    x = [(i-mu)/std for i in emp_p_n[gene_list[2]]]
+    probplot(x, plot=plt)
     plt.title(gene_list[2])
+
     plt.subplot(324)
     mu, std = permutation.mean(emp_p_n[gene_list[3]]), permutation.pstdev(emp_p_n[gene_list[3]])
     probplot(emp_p_n[gene_list[3]], plot=plt, sparams=(mu,std))
-    plt.title(gene_list[3])
+    x = [(i-mu)/std for i in emp_p_n[gene_list[3]]]
+    probplot(x, plot=plt)
+
     plt.subplot(325)
     mu, std = permutation.mean(emp_p_n[gene_list[4]]), permutation.pstdev(emp_p_n[gene_list[4]])
-    probplot(emp_p_n[gene_list[4]], plot=plt, sparams=(mu,std))
+    x = [(i-mu)/std for i in emp_p_n[gene_list[0]]]
+    probplot(x, plot=plt)
     plt.title(gene_list[4])
+
     plt.subplot(326)
     mu, std = permutation.mean(emp_p_n[gene_list[5]]), permutation.pstdev(emp_p_n[gene_list[5]])
-    probplot(emp_p_n[gene_list[5]], plot=plt, sparams=(mu,std))
+    x = [(i-mu)/std for i in emp_p_n[gene_list[5]]]
+    probplot(x, plot=plt)
     plt.title(gene_list[5])
     plt.tight_layout()
     plt.savefig(output_name+"_qqplot.pdf", dpi=300)
