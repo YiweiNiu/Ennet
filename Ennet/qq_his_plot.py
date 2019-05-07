@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import pickle
 import seaborn as sns
 import escore
+import permutation
 
 
 def qq_his_plot(G, output_name): 
@@ -26,24 +27,31 @@ def qq_his_plot(G, output_name):
     quantile = p_length // 5
     gene_list = [p[i][0] for i in [0, quantile-1, 2*quantile-1, 3*quantile-1, 4*quantile-1, p_length-1]]
     random_size = len(emp_p_n[gene_list[0]])
+
     plt.figure(1)
     plt.subplot(321)
-    probplot(emp_p_n[gene_list[0]], plot=plt)
+    mu, std = permutation.mean(emp_p_n[gene_list[0]]), permutation.pstdev(emp_p_n[gene_list[0]])
+    probplot(emp_p_n[gene_list[0]], plot=plt, sparams=(mu,std))
     plt.title(gene_list[0])
     plt.subplot(322)
-    probplot(emp_p_n[gene_list[1]], plot=plt)
+    mu, std = permutation.mean(emp_p_n[gene_list[1]]), permutation.pstdev(emp_p_n[gene_list[1]])
+    probplot(emp_p_n[gene_list[1]], plot=plt, sparams=(mu,std))
     plt.title(gene_list[1])
     plt.subplot(323)
-    probplot(emp_p_n[gene_list[2]], plot=plt)
+    mu, std = permutation.mean(emp_p_n[gene_list[2]]), permutation.pstdev(emp_p_n[gene_list[2]])
+    probplot(emp_p_n[gene_list[2]], plot=plt, sparams=(mu,std))
     plt.title(gene_list[2])
     plt.subplot(324)
-    probplot(emp_p_n[gene_list[3]], plot=plt)
+    mu, std = permutation.mean(emp_p_n[gene_list[3]]), permutation.pstdev(emp_p_n[gene_list[3]])
+    probplot(emp_p_n[gene_list[3]], plot=plt, sparams=(mu,std))
     plt.title(gene_list[3])
     plt.subplot(325)
-    probplot(emp_p_n[gene_list[4]], plot=plt)
+    mu, std = permutation.mean(emp_p_n[gene_list[4]]), permutation.pstdev(emp_p_n[gene_list[4]])
+    probplot(emp_p_n[gene_list[4]], plot=plt, sparams=(mu,std))
     plt.title(gene_list[4])
     plt.subplot(326)
-    probplot(emp_p_n[gene_list[5]], plot=plt)
+    mu, std = permutation.mean(emp_p_n[gene_list[5]]), permutation.pstdev(emp_p_n[gene_list[5]])
+    probplot(emp_p_n[gene_list[5]], plot=plt, sparams=(mu,std))
     plt.title(gene_list[5])
     plt.tight_layout()
     plt.savefig(output_name+"_qqplot.png")
@@ -76,5 +84,5 @@ def qq_his_plot(G, output_name):
 if __name__=="__main__":
     pkl_file = open("/home/niuyw/Project/RegulatorySNP_170808/ennet_190429/20903b5/breast_network.pickle",'r')
     G = pickle.load(pkl_file)
-    qqq_his_plot(G,"breast")
+    qq_his_plot(G,"breast")
     pkl_file.close()
