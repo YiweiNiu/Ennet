@@ -74,7 +74,7 @@ def qq_his_plot(G, output_name):
     
 
 if __name__=="__main__":
-    pkl_file = open("/home/niuyw/Project/RegulatorySNP_170808/ennet_190429/20903b5/brain_network.pickle",'r')
+    pkl_file = open("/home/niuyw/Project/RegulatorySNP_170808/ennet_190429/20903b5/breast_network.pickle",'r')
     G = pickle.load(pkl_file)
-    qqplot(G,"brain")
+    qqq_his_plot(G,"breast")
     pkl_file.close()
