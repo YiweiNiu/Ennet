@@ -4,18 +4,18 @@
 Purpose: main function of ennet.
 
 '''
+
 import sys
 import argparse
 from datetime import datetime
 import networkx as nx
 from collections import OrderedDict
+import logging
+import pickle
 
 import preprocess
 import escore
 import permutation
-
-import logging    # logging
-import pickle
 
 # logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -25,7 +25,8 @@ positive_genes=["ACTRT1","ASCL1","ATF7IP","BHLHE41","BMF","BMP4","BTN3A2","CCDC1
 
 
 def ennet(args):
-
+    '''
+    '''
     begin = datetime.now()
 
     network_file = args.network
@@ -88,7 +89,7 @@ def main():
 
     nodeList = open('%s_nodes.txt' %(output_prefix), 'w')
 
-    i=1
+    i = 1
     positive_gene_rank={}
     for node in gene_emp_q_sorted_dict:
         if node in positive_genes:
@@ -117,7 +118,7 @@ def main():
     positive_gene_detail.close()
 
     network_object_file = open('%s_network.pickle' %(output_prefix), 'wb')
-    pickle.dump(G, network_object_file)
+    pickle.dump(G, network_object_file, 2)
     network_object_file.close()
 
     logger.info('Cheers.')

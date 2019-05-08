@@ -9,9 +9,12 @@ Functions included:
 
 '''
 
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
+import os
+os.environ["OMP_NUM_THREADS"] = "1" # export OMP_NUM_THREADS=1
+os.environ["OPENBLAS_NUM_THREADS"] = "1" # export OPENBLAS_NUM_THREADS=1
+os.environ["MKL_NUM_THREADS"] = "1" # export MKL_NUM_THREADS=1
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1" # export VECLIB_MAXIMUM_THREADS=1
+os.environ["NUMEXPR_NUM_THREADS"] = "1" # export NUMEXPR_NUM_THREADS=1
 
 import sys
 import networkx as nx
@@ -32,8 +35,11 @@ logger = logging.getLogger(__name__)
 def count_enh_snps(G):
     '''
     get snp count of enhancers
-    '''
 
+    @parameter G - graph
+
+    @return G - graph
+    '''
     snp_pos = dict()
     for contig in G.graph['contigs']:   # numba likes for loops
         snp_pos[contig] = dict()
@@ -78,8 +84,11 @@ def count_enh_snps(G):
 def count_gene_snps(G):
     '''
     get snp count of genes
-    '''
 
+    @parameter G - graph
+
+    @return G - graph
+    '''
     # enhancer snp count dict
     enh_snp_count = get_value_from_graph(G, 'enhancer', 'snp_count')
 
@@ -191,7 +200,7 @@ def difference(A, r):
     return n-s
 
 
-#@jit, numba does not support ridder function
+# numba does not support ridder function
 def choose_r(G):
     '''
     Find value of r that sets difference to zero between fraction of distribution on neighbors and non-neighbors to zero.

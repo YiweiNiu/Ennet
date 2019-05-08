@@ -13,7 +13,6 @@ import sys
 from multiprocessing import cpu_count, Pool
 import copy
 import networkx as nx
-import numpy as np
 from scipy.stats import norm
 import logging
 from numba import jit
@@ -201,7 +200,6 @@ def permutation(G, permutation_times, threads=None):
 
     @return G - graph
     '''
-
     if not threads:
         threads = cpu_count()
 
