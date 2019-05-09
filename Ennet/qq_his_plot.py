@@ -51,9 +51,9 @@ def qq_his_plot(G, output_name):
 
     plt.subplot(324)
     mu, std = permutation.mean(emp_p_n[gene_list[3]]), permutation.pstdev(emp_p_n[gene_list[3]])
-    probplot(emp_p_n[gene_list[3]], plot=plt, sparams=(mu,std))
     x = [(i-mu)/std for i in emp_p_n[gene_list[3]]]
     probplot(x, plot=plt)
+    plt.title(gene_list[3])
 
     plt.subplot(325)
     mu, std = permutation.mean(emp_p_n[gene_list[4]]), permutation.pstdev(emp_p_n[gene_list[4]])
