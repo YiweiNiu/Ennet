@@ -30,11 +30,10 @@ def qq_his_plot(G, output_name):
     random_size = len(emp_p_n[gene_list[0]])
 
     plt.figure(1)
-    ax = plt.subplot(321)
+    plt.subplot(321)
     mu, std = permutation.mean(emp_p_n[gene_list[0]]), permutation.pstdev(emp_p_n[gene_list[0]])
     x = [(i-mu)/std for i in emp_p_n[gene_list[0]]]
-    ax.set_xlim([min(x), max(x)])
-    probplot(x, plot=ax)
+    probplot(x, plot=plt)
     plt.title(gene_list[0])
 
     plt.subplot(322)
