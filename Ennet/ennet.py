@@ -28,53 +28,18 @@ import permutation
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-positive_genes=["ACTRT1","ASCL1","ATF7IP","BHLHE41","BMF","BMP4","BTN3A2","CCDC171","CCND1","CCNE1","CD274","CD47","CEACAM21","CXCR4","ELL2","EPHB3","ESR1","ETV1","FGF10","FOXE1","GFI1B","GREM1","HOTAIR","IGFBP5","IL1B","LMO1","LUNAR1","MECOM","MGMT","MIR1262","MLH1","MRPS30","MUC5AC","MUC5B","MYB","MYC","PAX5","PCAT1","PCAT19","PDE4B","PSIP1","PTCSC2","PTX3","PVT1","RARA","RASL11A","RFX6","RMND1","SMAD7","SOD2","SOX9","ST18","STC1","TAL1","TERT","TP63","UPK3A"]
+positive_genes=["ACTRT1","ASCL1","ATF7IP","BHLHE41","BMF","BMP4","BTN3A2","CCDC171",
+                "CCND1","CCNE1","CD274","CD47","CEACAM21","CXCR4","ELL2","EPHB3",
+                "ESR1","ETV1","FGF10","FOXE1","GFI1B","GREM1","HOTAIR","IGFBP5",
+                "IL1B","LMO1","LUNAR1","MECOM","MGMT","MIR1262","MLH1","MRPS30",
+                "MUC5AC","MUC5B","MYB","MYC","PAX5","PCAT1","PCAT19","PDE4B","PSIP1",
+                "PTCSC2","PTX3","PVT1","RARA","RASL11A","RFX6","RMND1","SMAD7","SOD2",
+                "SOX9","ST18","STC1","TAL1","TERT","TP63","UPK3A"]
 
 
-def ennet(args):
+def report(G=None, output_prefix=None):
     '''
     '''
-    begin = datetime.now()
-
-    network_file = args.network
-    enhancer_file = args.enhancer
-    snp_file = args.mutation
-    # do some args checking here
-
-    # preprocess
-    G = preprocess.preprocess(network_file, enhancer_file)
-
-    # escore
-    G = escore.escore(snp_file, G, args.r)
-
-    # permutation test
-    G = permutation.permutation(G, args.permutation, args.threads)
-
-    end = datetime.now()
-
-    logger.info('All done. Elapse time: %s.' %(end-begin))
-
-    return G
-
-
-def main():
-
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, \
-                                    usage='\n\npython runEnnet.py [-h] <-n network file> <-e enhancer-gene pairs> <-m snp file> [-r restart possibility] [-o output prefix]\n', \
-                                    description='', epilog='Ennet: enhancer-mutated cancer gene prioritizaion with random walk with restart.')
-
-    parser.add_argument('-t', '--threads', type=int, help='Number of CPUs used when permutation. Using all CPUs by default.', metavar='', dest="threads")
-    parser.add_argument('-n', '--network', required=True, type=str, help='Path to tab-separated network.', metavar='', dest="network")
-    parser.add_argument('-e', '--enhancer', required=True, type=str, help='Path to enhancer-gene pairs.', metavar='', dest="enhancer")
-    parser.add_argument('-m', '--mutation', required=True, type=str, help='Path to snp file.', metavar='', dest="mutation")
-    parser.add_argument('-r', type=float, help='Restart possibility. Choose between 0 and 1.', metavar='', dest="r")
-    parser.add_argument('-p', '--permutation', default=500, type=int, help='Permutation times.', metavar='', dest="permutation")
-    parser.add_argument('-o', '--output', default='ennet_res', help='Output prefix.', metavar='', dest="output")
-
-    args = parser.parse_args()
-
-    G = ennet(args)
-
     gene_enh_count = escore.get_value_from_graph(G, 'gene', 'enh_num')
     gene_enh_len = escore.get_value_from_graph(G, 'gene', 'enh_len')
     gene_snp_count = escore.get_value_from_graph(G, 'gene', 'snp_count')
@@ -91,8 +56,6 @@ def main():
     gene_emp_q_sorted_dict = OrderedDict()
     for pair in gene_emp_q_orig:
         gene_emp_q_sorted_dict[pair[0]]=pair[1]
-
-    output_prefix = args.output
 
     nodeList = open('%s_nodes.txt' %(output_prefix), 'w')
 
@@ -127,8 +90,49 @@ def main():
     network_object_file = open('%s_network.pickle' %(output_prefix), 'wb')
     pickle.dump(G, network_object_file, 2)
     network_object_file.close()
+    logger.info('Writing results done.')
 
-    logger.info('Cheers.')
+
+def ennet(args):
+    '''
+    '''
+    network_file = args.network
+    enhancer_file = args.enhancer
+    snp_file = args.mutation
+    # do some args checking here
+
+    # preprocess
+    G = preprocess.preprocess(network_file, enhancer_file)
+
+    # escore
+    G = escore.escore(snp_file, G, args.r)
+
+    # permutation test
+    G = permutation.permutation(G, args.permutation, args.threads)
+
+    # report results
+    report(G, args.output)
+
+    logger.info('All done. Cheers')
+
+
+def main():
+
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, \
+                                    usage='\n\npython runEnnet.py [-h] <-n network file> <-e enhancer-gene pairs> <-m snp file> [-r restart possibility] [-o output prefix]\n', \
+                                    description='', epilog='Ennet: enhancer-mutated cancer gene prioritizaion with random walk with restart.')
+
+    parser.add_argument('-t', '--threads', type=int, help='Number of CPUs used when permutation. Using all CPUs by default.', metavar='', dest="threads")
+    parser.add_argument('-n', '--network', required=True, type=str, help='Path to tab-separated network.', metavar='', dest="network")
+    parser.add_argument('-e', '--enhancer', required=True, type=str, help='Path to enhancer-gene pairs.', metavar='', dest="enhancer")
+    parser.add_argument('-m', '--mutation', required=True, type=str, help='Path to snp file.', metavar='', dest="mutation")
+    parser.add_argument('-r', type=float, help='Restart possibility. Choose between 0 and 1.', metavar='', dest="r")
+    parser.add_argument('-p', '--permutation', default=500, type=int, help='Permutation times.', metavar='', dest="permutation")
+    parser.add_argument('-o', '--output', default='ennet_res', help='Output prefix.', metavar='', dest="output")
+
+    args = parser.parse_args()
+
+    ennet(args)
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 @jit
-def count_enh_snps(G):
+def count_enh_snps(G=None):
     '''
     get snp count of enhancers
 
@@ -74,7 +74,7 @@ def count_enh_snps(G):
 
 
 @jit
-def count_gene_snps(G):
+def count_gene_snps(G=None):
     '''
     get snp count of genes
 
@@ -101,7 +101,7 @@ def count_gene_snps(G):
 
 
 @jit
-def get_gene_poisson_p(G):
+def get_gene_poisson_p(G=None):
     '''
     update the gene_pvalue dict
 
@@ -150,7 +150,7 @@ def get_gene_poisson_p(G):
     return G
 
 
-def normalize_cols(A):
+def normalize_cols(A=None):
     '''
     normalize matrix by cols
     
@@ -162,7 +162,7 @@ def normalize_cols(A):
 
 
 @jit
-def diffusion_matrix(A, r):
+def diffusion_matrix(A=None, r=None):
     '''
     Perform the RWR process
 
@@ -176,7 +176,7 @@ def diffusion_matrix(A, r):
 
 
 @jit
-def difference(A, r):
+def difference(A=None, r=None):
     '''
     Find difference between fraction of distribution on neighbors and non-neighbors
 
@@ -194,7 +194,7 @@ def difference(A, r):
 
 
 # numba does not support ridder function
-def choose_r(G):
+def choose_r(G=None):
     '''
     Find value of r that sets difference to zero between fraction of distribution on neighbors and non-neighbors to zero.
     Derived from Hotnet2.
@@ -211,7 +211,7 @@ def choose_r(G):
 
 
 @jit
-def get_p_0(G, score_method='log10_pvalue'):
+def get_p_0(G=None, score_method='log10_pvalue'):
     '''
     get init p0 of RWR
 
@@ -246,7 +246,7 @@ def get_p_0(G, score_method='log10_pvalue'):
 
 
 @jit
-def stationary_p(G):
+def stationary_p(G=None):
     '''
     Calculate p when RWR reaches a stationary distribution
 
@@ -269,7 +269,7 @@ def stationary_p(G):
     return G
 
 
-def put_value_into_graph(value_dict, G, node_type, value_type):
+def put_value_into_graph(value_dict=None, G=None, node_type=None, value_type=None):
     '''
     put values into a graph
 
@@ -288,7 +288,7 @@ def put_value_into_graph(value_dict, G, node_type, value_type):
     return H
 
 
-def get_value_from_graph(G, node_type, value_type):
+def get_value_from_graph(G=None, node_type=None, value_type=None):
     '''
     get values from a graph
 
@@ -307,7 +307,7 @@ def get_value_from_graph(G, node_type, value_type):
     return value_dict
 
 
-def escore(snp_file, G, r=None):
+def escore(snp_file=None, G=None, r=None):
     '''
     escore
 

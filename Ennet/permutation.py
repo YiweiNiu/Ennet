@@ -25,20 +25,20 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-def mean(data):
+def mean(data=None):
     """Return the sample arithmetic mean of data.
     http://stackoverflow.com/a/27758326/632242
     """
     n = len(data)
     return sum(data)/float(n)
 
-def _ss(data):
+def _ss(data=None):
     """Return sum of square deviations of sequence data."""
     c = mean(data)
     ss = sum((x-c)**2 for x in data)
     return ss
 
-def pstdev(data):
+def pstdev(data=None):
     """Calculates the population standard deviation."""
     n = len(data)
     ss = _ss(data)
@@ -46,7 +46,7 @@ def pstdev(data):
     return pvar**0.5
 
 
-def multiple_testing_correction(pvalues, correction_type="Benjamini-Hochberg"):
+def multiple_testing_correction(pvalues=None, correction_type="Benjamini-Hochberg"):
     """
     Copyright 2017 Francisco Pina Martins <f.pinamartins@gmail.com>
 
@@ -78,7 +78,7 @@ def multiple_testing_correction(pvalues, correction_type="Benjamini-Hochberg"):
             rank = n - i
             pvalue, index = vals
             new_values.append((n/rank) * pvalue)
-        for i in xrange(0, int(n)-1):
+        for i in range(0, int(n)-1):
             if new_values[i] < new_values[i+1]:
                 new_values[i+1] = new_values[i]
         for i, vals in enumerate(values):
@@ -88,7 +88,7 @@ def multiple_testing_correction(pvalues, correction_type="Benjamini-Hochberg"):
     return qvalues
 
 
-def multi_test_pvalues(G):
+def multi_test_pvalues(G=None):
 
     '''
     adjust p value
@@ -114,7 +114,7 @@ def multi_test_pvalues(G):
     return G
 
 
-def random_net(G):
+def random_net(G=None):
     '''
     Random the network but keep the original node degree roughly
 
@@ -138,7 +138,7 @@ def random_net(G):
 
 
 @jit
-def get_emp_p(G, results):
+def get_emp_p(G=None, results=None):
     '''
     get emp_p from permutation test
 
@@ -171,7 +171,7 @@ def get_emp_p(G, results):
     return G
 
 
-def permutation_helper(G, p_0, r):
+def permutation_helper(G=None, p_0=None, r=None):
     '''
     helper function for permutation
 
@@ -190,7 +190,7 @@ def permutation_helper(G, p_0, r):
     return random_p_n
 
 
-def permutation(G, permutation_times, threads=None):
+def permutation(G=None, permutation_times=None, threads=None):
     '''
     permutation test: random network 500 times to generate emperical distribution of final score
 
@@ -200,7 +200,7 @@ def permutation(G, permutation_times, threads=None):
 
     @return G - graph
     '''
-    if not threads:
+    if threads is None:
         threads = cpu_count()
 
     logger.info('Start network permutation, using %s threads.' % threads)
