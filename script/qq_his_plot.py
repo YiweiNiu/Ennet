@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import scipy as sp
 from scipy.stats import probplot
 import matplotlib as mpl
 import networkx as nx
@@ -33,37 +34,55 @@ def qq_his_plot(G, output_name):
     plt.subplot(321)
     mu, std = permutation.mean(emp_p_n[gene_list[0]]), permutation.pstdev(emp_p_n[gene_list[0]])
     x = [(i-mu)/std for i in emp_p_n[gene_list[0]]]
-    probplot(x, plot=plt)
+    #probplot(x, plot=plt)
+    #params = sp.stats.t.fit(emp_p_n[gene_list[0]])
+    #print(params)
+    probplot(x, sparams=(2,), plot=plt)
     plt.title(gene_list[0])
 
     plt.subplot(322)
-    mu, std = permutation.mean(emp_p_n[gene_list[1]]), permutation.pstdev(emp_p_n[gene_list[1]])
+    #mu, std = permutation.mean(emp_p_n[gene_list[1]]), permutation.pstdev(emp_p_n[gene_list[1]])
     x = [(i-mu)/std for i in emp_p_n[gene_list[1]]]
-    probplot(x, plot=plt)
+    #probplot(x, plot=plt)
+    #params = sp.stats.t.fit(emp_p_n[gene_list[1]])
+    #print(params)
+    probplot(x, sparams=(2,), plot=plt)
     plt.title(gene_list[1])
 
     plt.subplot(323)
-    mu, std = permutation.mean(emp_p_n[gene_list[2]]), permutation.pstdev(emp_p_n[gene_list[2]])
+    #mu, std = permutation.mean(emp_p_n[gene_list[2]]), permutation.pstdev(emp_p_n[gene_list[2]])
     x = [(i-mu)/std for i in emp_p_n[gene_list[2]]]
-    probplot(x, plot=plt)
+    #probplot(x, plot=plt)
+    #params = sp.stats.t.fit(emp_p_n[gene_list[2]])
+    #print(params)
+    probplot(x, sparams=(2,), plot=plt)
     plt.title(gene_list[2])
 
     plt.subplot(324)
-    mu, std = permutation.mean(emp_p_n[gene_list[3]]), permutation.pstdev(emp_p_n[gene_list[3]])
-    probplot(emp_p_n[gene_list[3]], plot=plt, sparams=(mu,std))
+    #mu, std = permutation.mean(emp_p_n[gene_list[3]]), permutation.pstdev(emp_p_n[gene_list[3]])
     x = [(i-mu)/std for i in emp_p_n[gene_list[3]]]
-    probplot(x, plot=plt)
+    #probplot(x, plot=plt)
+    #params = sp.stats.t.fit(emp_p_n[gene_list[3]])
+    #print(params)
+    probplot(x, sparams=(2,), plot=plt)
+    plt.title(gene_list[3])
 
     plt.subplot(325)
-    mu, std = permutation.mean(emp_p_n[gene_list[4]]), permutation.pstdev(emp_p_n[gene_list[4]])
-    x = [(i-mu)/std for i in emp_p_n[gene_list[0]]]
-    probplot(x, plot=plt)
+    #mu, std = permutation.mean(emp_p_n[gene_list[4]]), permutation.pstdev(emp_p_n[gene_list[4]])
+    x = [(i-mu)/std for i in emp_p_n[gene_list[4]]]
+    #probplot(x, plot=plt)
+    #params = sp.stats.t.fit(emp_p_n[gene_list[4]])
+    #print(params)
+    probplot(x, sparams=(2,), plot=plt)
     plt.title(gene_list[4])
 
     plt.subplot(326)
-    mu, std = permutation.mean(emp_p_n[gene_list[5]]), permutation.pstdev(emp_p_n[gene_list[5]])
+    #mu, std = permutation.mean(emp_p_n[gene_list[5]]), permutation.pstdev(emp_p_n[gene_list[5]])
     x = [(i-mu)/std for i in emp_p_n[gene_list[5]]]
-    probplot(x, plot=plt)
+    #probplot(x, plot=plt)
+    #params = sp.stats.t.fit(emp_p_n[gene_list[5]])
+    #print(params)
+    probplot(x, sparams=(2,), plot=plt)
     plt.title(gene_list[5])
     plt.tight_layout()
     plt.savefig(output_name+"_qqplot.pdf", dpi=300)
