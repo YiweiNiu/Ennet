@@ -30,7 +30,7 @@ tmp_list = np.array(tmp_list)
 total_scores = len(tmp_list)
 
 for gene in H:
-    H.nodes[gene]['emp_p'] = np.sum(tmp_list>H.nodes[gene]['p_n'])/total_scores
+    H.nodes[gene]['emp_p'] = np.sum(tmp_list>H.nodes[gene]['p_n'])/float(total_scores)
 
 H = permutation.multi_test_pvalues(H)
 
