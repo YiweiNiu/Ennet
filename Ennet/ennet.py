@@ -69,8 +69,8 @@ def report(G=None, output_prefix=None):
         nodeList.write('\t'.join([node, str(total_enh_len), str(total_enh_snp_count),
                                   str(gene_enh_len[node]), str(gene_snp_count[node]),
                                   str(gene_pvalue[node]), str(gene_p_0[node]),
-                                  str(gene_p_0[node]), str(gene_p_n[node]),
-                                  str(gene_emp_p[node]), str(gene_emp_q_sorted_dict[node])]) + '\n')
+                                  str(gene_p_n[node]), str(gene_emp_p[node]),
+                                  str(gene_emp_q_sorted_dict[node])]) + '\n')
         i += 1
 
     nodeList.close()
