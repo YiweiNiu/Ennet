@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 
-def init_graph(network_file):
+def init_graph(network_file=None):
 
     G = nx.Graph(network_file = os.path.abspath(network_file))
     G.graph['python_version'] = platform.python_version()
@@ -51,7 +51,7 @@ def init_graph(network_file):
     return G
 
 
-def get_gene_enh_pair(enhancer_file, G):
+def get_gene_enh_pair(enhancer_file=None, G=None):
     '''
     get enhancer gene pairs
     '''
@@ -89,7 +89,7 @@ def get_gene_enh_pair(enhancer_file, G):
     return G
 
 
-def preprocess(network_file, enhancer_file):
+def preprocess(network_file=None, enhancer_file=None):
 
     G = init_graph(network_file)
     x1, y1 = G.number_of_nodes(), G.number_of_edges()
