@@ -14,6 +14,7 @@ from multiprocessing import cpu_count, Pool
 import copy
 import networkx as nx
 from scipy.stats import norm
+import numpy as np
 import logging
 from numba import jit
 
@@ -23,95 +24,6 @@ import preprocess
 # logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-
-def mean(data=None):
-    """Return the sample arithmetic mean of data.
-    http://stackoverflow.com/a/27758326/632242
-    """
-    n = len(data)
-    return sum(data)/float(n)
-
-def _ss(data=None):
-    """Return sum of square deviations of sequence data."""
-    c = mean(data)
-    ss = sum((x-c)**2 for x in data)
-    return ss
-
-def pstdev(data=None):
-    """Calculates the population standard deviation."""
-    n = len(data)
-    ss = _ss(data)
-    pvar = ss/n # the population variance
-    return pvar**0.5
-
-
-def multiple_testing_correction(pvalues=None, correction_type="Benjamini-Hochberg"):
-    """
-    Copyright 2017 Francisco Pina Martins <f.pinamartins@gmail.com>
-
-    Taken from https://stackoverflow.com/a/21739593/3091595, remove numpy dependence
-
-    @parameter pvalues - a list of pvalues
-    @parameter correction_type - pvalue correction method
-
-    @return qvalues - a list of qvalues
-    """
-    n = len(pvalues)
-    qvalues = [0]*n
-    if correction_type == "Bonferroni":
-        qvalues = n * pvalues
-
-    elif correction_type == "Bonferroni-Holm":
-        values = [(pvalue, i) for i, pvalue in enumerate(pvalues)]
-        values.sort()
-        for rank, vals in enumerate(values):
-            pvalue, i = vals
-            qvalues[i] = (n-rank) * pvalue
-
-    elif correction_type == "Benjamini-Hochberg":
-        values = [(pvalue, i) for i, pvalue in enumerate(pvalues)]
-        values.sort()
-        values.reverse()
-        new_values = []
-        for i, vals in enumerate(values):
-            rank = n - i
-            pvalue, index = vals
-            new_values.append((n/rank) * pvalue)
-        for i in range(0, int(n)-1):
-            if new_values[i] < new_values[i+1]:
-                new_values[i+1] = new_values[i]
-        for i, vals in enumerate(values):
-            pvalue, index = vals
-            qvalues[index] = new_values[i]
-
-    return qvalues
-
-
-def multi_test_pvalues(G=None):
-
-    '''
-    adjust p value
-
-    @parameter G - a graph
-
-    @return G - a graph
-    '''
-
-    # get gene pvalues dict
-    gene_emp_p = escore.get_value_from_graph(G, 'gene', 'emp_p')
-
-    genes = gene_emp_p.keys()
-    emp_p = gene_emp_p.values()
-
-    qvalues = multiple_testing_correction(emp_p)  # multi-test
-
-    gene_qvalue = {genes[i]:qvalues[i] for i in range(len(genes))}
-
-    # put into the graph
-    G = escore.put_value_into_graph(gene_qvalue, G, 'gene', 'emp_q')
-
-    return G
 
 
 def random_net(G=None):
@@ -147,26 +59,27 @@ def get_emp_p(G=None, results=None):
 
     @return G - graph
     '''
-    p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
-    emp_p_n = {}
+    emp_p_n = dict()
+    tmp_list = list()
 
     for i in results:
         random_p_n = i.get()    # ApplyResult, use get to access the value
+        tmp_list.extend(list(random_p_n.values()))
         for gene in random_p_n:
             if gene in emp_p_n:
                 emp_p_n[gene].append(random_p_n[gene])
             else:
                 emp_p_n[gene] = [random_p_n[gene]]
 
-    # test each gene using norm distribution
-    for gene in emp_p_n:
-        tmp_list = emp_p_n[gene]
-        mu, std = mean(tmp_list), pstdev(tmp_list)
-        rv = norm(mu, std)
-        p = rv.sf(p_n[gene])
+    # save emperical p-values
+    G = escore.put_value_into_graph(emp_p_n, G, 'gene', 'emp_p_n')
 
-        G.nodes[gene]['emp_p_n'] = emp_p_n[gene] #for qqplot
-        G.nodes[gene]['emp_p'] = p
+    tmp_list = np.array(tmp_list)
+    total_scores = len(tmp_list)
+
+    # compute p-value of each gene by counting the number of values large than it
+    for gene in G:
+        G.nodes[gene]['emp_p'] = np.sum(tmp_list>G.nodes[gene]['p_n'])/float(total_scores)
 
     return G
 
@@ -222,10 +135,6 @@ def permutation(G=None, permutation_times=None, threads=None):
     G = get_emp_p(G, results)
     logger.info('Computing emperical p-values done.')
 
-    # multi-test adjusting
-    G = multi_test_pvalues(G)
-    logger.info('Computing adjusted p-values done.')
-
     return G
 
 
@@ -246,7 +155,6 @@ def test():
     gene_p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
     gene_p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
     gene_emp_p = escore.get_value_from_graph(G, 'gene', 'emp_p')
-    gene_emp_q = escore.get_value_from_graph(G, 'gene', 'emp_q')
 
     fout = open('permutation_test.txt', 'w')
 
@@ -254,7 +162,7 @@ def test():
         fout.write('\t'.join([gene, str(gene_enh_count[gene]), str(gene_enh_len[gene]),
                               str(gene_snp_count[gene]), str(gene_pvalue[gene]),
                               str(gene_p_0[gene]), str(gene_p_n[gene]),
-                              str(gene_emp_p[gene]), str(gene_emp_q[gene])]) + '\n')
+                              str(gene_emp_p[gene])]) + '\n')
     fout.close()
 
 

@@ -47,21 +47,20 @@ def report(G=None, output_prefix=None):
     gene_p_0 = escore.get_value_from_graph(G, 'gene', 'p_0')
     gene_p_n = escore.get_value_from_graph(G, 'gene', 'p_n')
     gene_emp_p = escore.get_value_from_graph(G, 'gene', 'emp_p')
-    gene_emp_q = escore.get_value_from_graph(G, 'gene', 'emp_q')
 
     total_enh_len = G.graph['enh_len']
     total_enh_snp_count = G.graph['snp_count']
 
-    gene_emp_q_orig = sorted(gene_emp_q.items(), key=lambda x:x[1])
-    gene_emp_q_sorted_dict = OrderedDict()
-    for pair in gene_emp_q_orig:
-        gene_emp_q_sorted_dict[pair[0]]=pair[1]
+    gene_emp_p_orig = sorted(gene_emp_p.items(), key=lambda x:x[1])
+    gene_emp_p_sorted_dict = OrderedDict()
+    for pair in gene_emp_p_orig:
+        gene_emp_p_sorted_dict[pair[0]]=pair[1]
 
     nodeList = open('%s_nodes.txt' %(output_prefix), 'w')
 
     i = 1
     positive_gene_rank={}
-    for node in gene_emp_q_sorted_dict:
+    for node in gene_emp_p_sorted_dict:
         if node in positive_genes:
             positive_gene_rank[node]=i
         # gene name, total enhancer length, total snp count, gene enhancer length
@@ -69,8 +68,7 @@ def report(G=None, output_prefix=None):
         nodeList.write('\t'.join([node, str(total_enh_len), str(total_enh_snp_count),
                                   str(gene_enh_len[node]), str(gene_snp_count[node]),
                                   str(gene_pvalue[node]), str(gene_p_0[node]),
-                                  str(gene_p_n[node]), str(gene_emp_p[node]),
-                                  str(gene_emp_q_sorted_dict[node])]) + '\n')
+                                  str(gene_p_n[node]), str(gene_emp_p_sorted_dict[node])]) + '\n')
         i += 1
 
     nodeList.close()
