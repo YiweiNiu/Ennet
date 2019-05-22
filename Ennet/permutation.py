@@ -64,15 +64,7 @@ def get_emp_p(G=None, results=None):
 
     for i in results:
         random_p_n = i.get()    # ApplyResult, use get to access the value
-        tmp_list.extend(list(random_p_n.values()))
-        for gene in random_p_n:
-            if gene in emp_p_n:
-                emp_p_n[gene].append(random_p_n[gene])
-            else:
-                emp_p_n[gene] = [random_p_n[gene]]
-
-    # save emperical p-values
-    G = escore.put_value_into_graph(emp_p_n, G, 'gene', 'emp_p_n')
+        tmp_list.extend(random_p_n)
 
     tmp_list = np.array(tmp_list)
     total_scores = len(tmp_list)
@@ -83,6 +75,10 @@ def get_emp_p(G=None, results=None):
 
     return G
 
+@jit
+def random_stationary_p(A, p_0, r):
+    W = escore.normalize_cols(A)
+    return list(r*np.dot(np.linalg.inv(np.eye(*np.shape(W))-(1-r)*W), p_0))
 
 def permutation_helper(G=None, p_0=None, r=None):
     '''
@@ -96,11 +92,14 @@ def permutation_helper(G=None, p_0=None, r=None):
     '''
     GG = random_net(G)
     GG = escore.put_value_into_graph(p_0, GG, 'gene', 'p_0')
-    GG.graph['r'] = r
-    GG = escore.stationary_p(GG)
-    random_p_n = escore.get_value_from_graph(GG, 'gene', 'p_n')
+    gene_p_0 = escore.get_value_from_graph(GG, 'gene', 'p_0')
+    A = nx.to_numpy_array(GG)
+    #del GG
+    p_0 = np.array(list(gene_p_0.values()))
 
-    return random_p_n
+    p_n = random_stationary_p(A, p_0, r)
+
+    return p_n
 
 
 def permutation(G=None, permutation_times=None, threads=None):
