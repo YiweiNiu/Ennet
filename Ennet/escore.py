@@ -307,7 +307,7 @@ def get_value_from_graph(G=None, node_type=None, value_type=None):
     return value_dict
 
 
-def escore(snp_file=None, G=None, r=None):
+def escore(snp_file=None, G=None, r=None, p0_meth=None):
     '''
     escore
 
@@ -346,7 +346,7 @@ def escore(snp_file=None, G=None, r=None):
     #plot_root_finding(G)
 
     # get p_0
-    G = get_p_0(G, 'log10_pvalue')
+    G = get_p_0(G, p0_meth)
 
     # get stationary p
     G = stationary_p(G)
