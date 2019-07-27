@@ -103,7 +103,7 @@ def ennet(args):
     G = preprocess.preprocess(network_file, enhancer_file)
 
     # escore
-    G = escore.escore(snp_file, G, args.r)
+    G = escore.escore(snp_file, G, args.r, args.p0_meth)
 
     # permutation test
     G = permutation.permutation(G, args.permutation, args.threads)
@@ -127,6 +127,7 @@ def main():
     parser.add_argument('-r', type=float, help='Restart possibility. Choose between 0 and 1.', metavar='', dest="r")
     parser.add_argument('-p', '--permutation', default=500, type=int, help='Permutation times.', metavar='', dest="permutation")
     parser.add_argument('-o', '--output', default='ennet_res', help='Output prefix.', metavar='', dest="output")
+    parser.add_argument('--p0-method', default='log10_pvalue', choices=['log10_pvalue', 'snp_count', 'pvalue'], type=str, help='Method to compute p0.', metavar='', dest='p0_meth')
 
     if len(sys.argv) < 2:
         argparser.print_help()
