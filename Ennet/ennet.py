@@ -128,6 +128,10 @@ def main():
     parser.add_argument('-p', '--permutation', default=500, type=int, help='Permutation times.', metavar='', dest="permutation")
     parser.add_argument('-o', '--output', default='ennet_res', help='Output prefix.', metavar='', dest="output")
 
+    if len(sys.argv) < 2:
+        argparser.print_help()
+        sys.exit(1)
+
     args = parser.parse_args()
 
     ennet(args)
